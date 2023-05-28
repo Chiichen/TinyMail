@@ -3,7 +3,6 @@ package edu.scut.tinymail.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.scut.tinymail.domain.ResponseResult;
 import edu.scut.tinymail.domain.entry.Userauth;
-import edu.scut.tinymail.domain.vo.UserauthVO;
 
 /**
  * (Userauth)表服务接口
@@ -12,6 +11,9 @@ import edu.scut.tinymail.domain.vo.UserauthVO;
  * @since 2023-05-27 00:45:04
  */
 public interface UserauthService extends IService<Userauth> {
-    ResponseResult<?> login(UserauthVO userauthVO);
+
+     Userauth getByUsername(String username);
+
+     ResponseResult<?> register(Userauth userauth);
 }
 

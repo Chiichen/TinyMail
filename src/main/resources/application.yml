@@ -1,11 +1,15 @@
 
 server:
-  port: 4090
+  port: 2146
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/tinymail
     username: postgres
     password: 214615
     driver-class-name: org.postgresql.Driver
-
+springfox:
+  documentation:
+    swagger:
+      v2:
+        enabled: true
