@@ -354,34 +354,51 @@ public class SMTPTest {
         String mailServer="smtp.163.com";
         //发送方地址和接收方地址
         String fromAdress="m15017686102@163.com";
-        String toAdress="1405522135@qq.com";
+        String toAdress="140552135@qq.com";
         //发送方，验证信息，由于邮箱输入信息会使用64编码，因此需要进行编码
         String username="m15017686102@163.com";
         String password="KDONRCKHYQIJKRAF";
         //对username和password进行Base64编码
         String encodeUsername=Base64.getEncoder().encodeToString(username.getBytes());
         String encodePassword=Base64.getEncoder().encodeToString(password.getBytes());
+        //服务器端的回应
+        String response;
 
         //创建客户端套接字并建立连接
         int serverPort=25;//SMTP使用25号端口
         try{
         Socket clientSocket=new Socket(mailServer,serverPort);
+
+        //判断连接状态
+            isConnect(clientSocket,mailServer,serverPort);
+
+
         BufferedReader bufferedReader=new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
         BufferedWriter bufferedWriter=new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
         String line;
         //发送HELO，服务器将返回状态码250
         bufferedWriter.write("HELO 163.com\r\n");
         bufferedWriter.flush();
+        response=bufferedReader.readLine();
         //发送“AUTH LOGIN”命令，验证身份。服务器返回状态码334。然后服务器等待用户输入信息
         //如果用户验证成功，服务器返回状态码235
         bufferedWriter.write("AUTH LOGIN\r\n");
         bufferedWriter.flush();
-
+        response=bufferedReader.readLine();
             //发送验证信息
         bufferedWriter.write(encodeUsername+"\r\n");
         bufferedWriter.flush();
+        response=bufferedReader.readLine();
         bufferedWriter.write(encodePassword+"\r\n");
         bufferedWriter.flush();
+        response=bufferedReader.readLine();
+        //验证失败:
+//        if(Integer.parseInt(response.substring(0,3))==535){
+//            throw new Exception("535 Error: authentication failed");
+//        }else{
+//            System.out.println("235 Authentication successful");
+//        }
+        isLogin(response);
 
         //发送MAIL FROM命令，并包含发件人邮箱
         bufferedWriter.write("MAIL FROM: <"+fromAdress+">\r\n");
@@ -397,8 +414,8 @@ public class SMTPTest {
 
         //编辑邮件信息，发送数据
             bufferedWriter.write("Subject: Test\r\n");
-            bufferedWriter.write("From: sender@example.com\r\n");
-            bufferedWriter.write("To: recipient@example.com\r\n");
+            bufferedWriter.write("From: "+fromAdress+"\r\n");
+            bufferedWriter.write("To: "+toAdress+"\r\n");
             bufferedWriter.write("\r\n");
             bufferedWriter.write("This is a test message.\r\n");
             bufferedWriter.write(".\r\n");
@@ -411,6 +428,16 @@ public class SMTPTest {
 
         while((line=bufferedReader.readLine())!=null){
             System.out.println(line);
+
+            if(Integer.parseInt(line.substring(0,1))==4){
+                throw new Exception("Command execution failed and requires further inspection and debugging");
+            } else if(Integer.parseInt(line.substring(0,1))==5){
+                throw new Exception("Command execution failed and must be stopped and abandoned");
+            }
+
+
+
+
         }
 //        while (true){
 //            clientSocket.sendUrgentData(0xFF);
@@ -418,10 +445,28 @@ public class SMTPTest {
 //        }
 
         clientSocket.close();
-    }catch (Exception e){
-            System.out.println("目前处于断开状态!");
+    }catch (connectException e){
             e.printStackTrace();
+    }catch (loginException e){
+            e.printStackTrace();
+    }catch (Exception e){
+            e.printStackTrace();
+    }
+
+    }
+
+    public void isConnect(Socket socket,String mailServer,int serverPort) throws connectException{
+        if(!socket.isConnected()){
+            throw new connectException("Connection failed to " + mailServer + ":" + serverPort);
         }
     }
 
+    public void isLogin(String response)throws loginException{
+        if(Integer.parseInt(response.substring(0,3))==535){
+            throw new loginException("535 Error: authentication failed");
+        }
+//        else{
+//            System.out.println("235 Authentication successful");
+//        }
+    }
 }
