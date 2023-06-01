@@ -1,107 +1,95 @@
 <template>
-  <div class="loginBody">
-    <div class="loginDiv">
-      
-<div class="login-content">
-  <h1 class="login-title">用户登录</h1>
+  <el-container class="home-container">
+      <el-header><!-- 顶部区域 -->
+        <div>
+        <span>TinyMail</span>
+    </div>
 
+    <el-dropdown trigger="click">
+      <span class="el-dropdown-link">
+        切换账号
+        <i class="el-icon-arrow-down el-icon--right"></i>
+      </span>
+      <el-dropdown-menu slot="dropdown">
+        <el-dropdown-item @click.native="">
+          QQ邮箱
+        </el-dropdown-item>
 
+        <el-dropdown-item @click.native="">          
+            163邮箱
+        </el-dropdown-item>
 
+        <el-dropdown-item @click.native="">
+            谷歌邮箱
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </el-dropdown>
+    
+    <el-button type="primary" @click="logout">退出</el-button>
+      </el-header>
+      <!-- 主界面 -->
+      <el-container>
+          <!-- 控制区域 -->
+          <el-aside width="200px">
+            <el-menu
+          background-color="#3a3f4f"
+          text-color="#fff"
+          active-text-color="#ffd04b">         
+          <el-menu-item index="1">
+            <i class="el-icon-menu"></i>
+            <span >写信</span>
+          </el-menu-item>
+          <el-menu-item index="2">
+            <i class="el-icon-setting"></i>
+            <span >收信</span>
+          </el-menu-item>
+        </el-menu>           
+            </el-aside>
+          <!-- 展示区域 -->
+          <el-main>
 
-    <el-form  :model="loginform" :rules="rules" ref="loginForms" label-width="100px">
-       
-        <el-form-item  prop="userName"  >
-          <el-input size="medium" type="text" v-model="loginform.userName" placeholder="用户名" style="width:200px" autocomplete="false" clearable></el-input>
-        </el-form-item>
-
-        <el-form-item  prop="passWord"  >
-         <el-input  type="password" v-model="loginform.passWord" placeholder="密码"  style="width:200px" show-password autocomplete="false" clearable></el-input>
-        </el-form-item>
-
-        <el-form-item  >
-            <el-button type="primary" @click="submitButton" > 登录</el-button>
-        </el-form-item>
-
-      </el-form>
-
-</div>
-            
-     </div>
-  </div>
+          </el-main>
+      </el-container>
+  </el-container>
 </template>
- 
-<script >
 
+<script>
 export default {
-name:"login",
-
-
-data(){
-  return{
-    loginform:{
-  userName:'',
-  passWord:'',
-},
-rules:{
-  userName:[{ required: true, message: "请输入账号", trigger: "blur" },{
-          min: 10,
-          max: 20,
-          message: "账号长度应为10到20位",
-          trigger: 'blur'
-        }],
-passWord:[{ required: true, message: "请输入密码", trigger: "blur" },{
-          min:6,
-          max:20,
-          message:"密码长度应为6到20位",
-          trigger:'blur'
-}],
-}
+  data(){
+    return {
+      
+    }
+    
+  },
+  methods:{
+      logout(){
+          
+      }
   }
-},
-methods:{
-  submitButton(){
-
-  }
-}
 };
-
 </script>
+
+<style  scoped>
+.home-container{
+  font-family: "微软雅黑";
+  height: 100%;
+}
+.el-header{
+     background-color:rgb(119, 200, 186);
+     display: flex; 
+     justify-content: space-between;
+     padding-left: 30px;
+     align-items: center;
+     color: #fff;
+     font-size: 40px;
+ }
+  .el-aside{
+     background-color: #3a3f4f;
+ }
+  .el-main{
+     background-color: #eaedf1;
+ }
  
-<style scoped >
 
-/* 注意图片的路径 */
-    .loginBody {
-      background-image: url(assets/img/loginBackground.png);
-      background-size: 100% 100%;
-        width: 100%;
-        height: 100%;
-    }
-    .loginDiv {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        margin-top: -200px;
-        margin-left: -250px;
-        width: 450px;
-        height: 330px;
-        background: white;
-        border-radius: 5%;
-
-    }
-    .login-title {
-        margin: 20px 0;
-        text-align: center;
-    }
-    .login-content {
-        width: 400px;
-        height: 250px;
-        position: absolute;
-        top: 25px;
-        left: 25px;
-    }
-    
-
-
-    
+ 
 </style>
-
