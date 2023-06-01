@@ -1,0 +1,15 @@
+
+server:
+  port: ****
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:****/****
+    username: ****
+    password: ****
+    driver-class-name: org.postgresql.Driver
+springfox:
+  documentation:
+    swagger:
+      v2:
+        enabled: true
