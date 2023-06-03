@@ -2,12 +2,10 @@
   <div class="loginBody">
     <div class="loginDiv">
       <div class="logo">
-        <img src="public/img/logo.png" alt="Logo" class="logo-img">
+        <img src="img/logo.png" alt="Logo" class="logo-img">
       </div>
 
       <div class="login-content">
-
-
 
 
 
@@ -69,7 +67,7 @@ export default {
   }
 };
 
-</script>
+</script>d
 
 <style scoped >
 
