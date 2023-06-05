@@ -1,6 +1,6 @@
 package edu.scut.tinymail.utils.MIME;
 
-import org.junit.Test;
+import org.testng.annotations.Test;
 
 import java.io.*;
 import java.net.Socket;
@@ -87,14 +87,14 @@ public class MIMETest {
             // 发送附件
             writer.println("--boundary");
             writer.println("Content-Type: application/octet-stream");
-            writer.println("Content-Disposition: attachment; filename=\"file.txt\"");
+            writer.println("Content-Disposition: attachment; filename=\"test.txt\"");
             writer.println();
 
             // 读取附件内容并进行Base64编码后发送
-            Path attachmentPath = Paths.get("D:\\IDEA\\IdeaProjects\\mail-demo\\mail-demo\\src\\com\\cc4cin\\mailtest\\file.txt");
+            Path attachmentPath = Paths.get("C:\\Users\\ASUS\\Desktop\\test.txt");
             byte[] attachmentBytes = Files.readAllBytes(attachmentPath);
-            String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
-            writer.println(base64EncodedAttachment);
+            //String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
+            writer.println(new String(attachmentBytes));
 
             // 结束邮件内容
             writer.println();
