@@ -1,10 +1,12 @@
 import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import { createRouter, createWebHistory } from 'vue-router';
+
 import Home from "./components/Home.vue";
 import Login from "./components/login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+
 import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
