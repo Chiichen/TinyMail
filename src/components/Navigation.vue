@@ -2,7 +2,7 @@ import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
-import Welcome from "./components/Welcome.vue"
+import Welcome from "./components/Welcome.vue";
 
 <template>
   <div>
