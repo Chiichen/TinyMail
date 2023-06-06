@@ -1,7 +1,8 @@
 import Home from "./components/Home.vue";
-import Login from "./components/login.vue";
+import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+import Welcome from "./components/Welcome.vue"
 
 <template>
   <div>
@@ -9,6 +10,8 @@ import Receiving from "./components/Receiving.vue";
     <RouterLink to="/Login">Login</RouterLink>
     <RouterLink to="/Receiving">Receiving</RouterLink>
     <RouterLink to="/Writing">Writing</RouterLink>
+    <RouterLink to="/Welcome">Welcome</RouterLink>
+    
   </div>
 </template>
 

@@ -3,16 +3,14 @@ import ElementPlus from 'element-plus'
 import { createRouter, createWebHistory } from 'vue-router';
 
 import Home from "./components/Home.vue";
-import Login from "./components/login.vue";
+import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+import Welcome from "./components/Welcome.vue"
 
 import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
-
-
-createApp(App).use(ElementPlus).mount('#app')
 
 const routes=[
     {
@@ -31,6 +29,10 @@ const routes=[
         path:'/Receiving',
         component: Receiving,
     },
+    {
+        path:'/Welcome',
+        component: Welcome,
+    },
 ];
 
 const router=createRouter({
@@ -39,5 +41,5 @@ const router=createRouter({
 })
 
 const app=createApp(App);
-app.use(router);
-app.mount('#app');
+app.use(ElementPlus)
+app.use(router).mount('#app');
