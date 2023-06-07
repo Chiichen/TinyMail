@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import { createRouter, createWebHistory } from 'vue-router';
 
+/* 路由配置 */
 import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
@@ -13,26 +14,21 @@ import App from './App.vue'
 import 'element-plus/dist/index.css'
 
 const routes=[
-    {
-        path:'/Home',
-        component: Home,
-    },
+    
     {
         path:'/Login',
         component: Login,
     },
     {
-        path:'/Writing',
-        component: Writing,
+        path:'/home',
+        component: Home,
+        redirect: '/welcome',
+        children:[{path:'/welcome',component:Welcome},
+        {path:'/writing',component: Writing},
+        {path:'/receiving',component: Receiving}]
     },
-    {
-        path:'/Receiving',
-        component: Receiving,
-    },
-    {
-        path:'/Welcome',
-        component: Welcome,
-    },
+    
+    
 ];
 
 const router=createRouter({
