@@ -20,6 +20,14 @@ const routes=[
         component: Login,
     },
     {
+        path:'/Writing',
+        component:Writing
+    },
+    {
+        path:'/Receiving',
+        component:Receiving
+    },
+    {
         path:'/home',
         component: Home,
         redirect: '/welcome',
@@ -27,6 +35,7 @@ const routes=[
         {path:'/writing',component: Writing},
         {path:'/receiving',component: Receiving}]
     },
+
     
     
 ];
@@ -37,5 +46,6 @@ const router=createRouter({
 })
 
 const app=createApp(App);
+
 app.use(ElementPlus)
 app.use(router).mount('#app');

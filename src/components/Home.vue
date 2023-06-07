@@ -1,3 +1,4 @@
+<!-- 邮箱主页的绘制 -->
 <template>
   <el-container class="home-container">
       <el-header><!-- 顶部区域 -->
@@ -38,11 +39,11 @@
           background-color="#3a3f4f"
           text-color="#fff"
           active-text-color="#ffd04b">         
-          <el-menu-item index="1">
+          <el-menu-item index="1" @click="writeLetter">
             <i class="el-icon-menu"></i>
             <span >写信</span>
           </el-menu-item>
-          <el-menu-item index="2">
+          <el-menu-item index="2" @click="receiveLetter">
             <i class="el-icon-setting"></i>
             <span >收信</span>
           </el-menu-item>
@@ -51,18 +52,14 @@
           <!-- 展示区域 -->
           <el-main>
 
-          <!-- welcome的测试显示位置 -->
-            <!-- <div class="welcome-div">
+          <!-- welcome的默认显示位置 -->
+            <div class="welcome-div" v-if="isWelcome">
             <img src="img/welcome.png" alt="Welcome">
             <p>请点击左侧按钮，亲</p>
-          </div> -->
-
-          <!-- writing的测试显示位置 -->
-
-          <!-- receiving的测试显示位置 -->
-
-            <!-- router-view无法显示 -->
-            <router-view ></router-view>
+          </div>
+          
+          <!-- 写信与收信按钮的实现 -->
+            <router-view v-if="!isWelcome"></router-view>
               
           </el-main>
       </el-container>
@@ -70,14 +67,30 @@
 </template>
 
 <script>
+import emitter from '../event'
 export default {
   data(){
     return {
+      isWelcome:true
       
     }
     
   },
   methods:{
+    back(a){
+      console.log("回到默认界面",a)
+      this.isWelcome=true
+    },
+    writeLetter(){
+      this.$router.push("/Writing")
+      this.isWelcome=false
+      emitter.on('back',this.back)
+    },
+    receiveLetter(){
+      this.$router.push("/Receiving")
+      this.isWelcome=false
+      emitter.on('back',this.back)
+    },
       logout(){
           
       }
@@ -109,7 +122,7 @@ export default {
  }
 
  /* welcome的样式 */
- /* .welcome-div{
+ .welcome-div{
   display: flex;
   flex-direction:column ;
   justify-content: center;
@@ -127,10 +140,6 @@ export default {
  .welcome-div p{
   text-align: center;
   font-family: "微软雅黑";
- } */
+ }
 
- /* writing的样式 */
-
- 
- /* welcome的样式 */
 </style>

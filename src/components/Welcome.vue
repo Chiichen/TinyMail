@@ -1,5 +1,5 @@
 <template>
     <div>
-        <h3>Welcome</h3>
+        <!-- 没用的摆设罢了 -->
     </div>
 </template>
