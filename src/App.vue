@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Home/>
+    <Login/>
   </div>
 </template>
 <script>

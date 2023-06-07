@@ -84,8 +84,9 @@ export default {
 
 /* 注意图片的路径 */
 .loginBody {
-  background-image: url(assets/img/loginBackground.png);
+  background-image: url(img/loginBackground.png);
   background-size: 100% 100%;
+  position: fixed;
   width: 100%;
   height: 100%;
 }
