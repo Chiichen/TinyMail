@@ -35,7 +35,7 @@ public class MIMETest {
             System.out.println(response);
 
             // 发送SMTP命令
-            sendCommand(writer, "HELO qq.com");
+            sendCommand(writer, "HELO qq.com");//
             response = reader.readLine();
             System.out.println(response);
 
@@ -60,7 +60,7 @@ public class MIMETest {
             System.out.println(response);
 
             // 发送收件人信息
-            sendCommand(writer, "RCPT TO: <1405522135@qq.com>");
+            sendCommand(writer, "RCPT TO: <13712922800@163.com>");
             response = reader.readLine();
             System.out.println(response);
 
@@ -71,12 +71,13 @@ public class MIMETest {
 
             // 发送邮件头部
             writer.println("From: 2530221402@qq.com");
-            writer.println("To:1277719855@qq.com");
+            writer.println("To:13712922800@163.com");
             writer.println("Subject: Test Email");
             writer.println("MIME-Version: 1.0");
             //writer.println("charset=\"UTF-8\"");
             writer.println("Content-Transfer-Encoding: base64");
             writer.println("Content-Type: multipart/mixed; boundary=boundary");
+            writer.println();
 
             // 发送邮件正文
             writer.println("--boundary");
@@ -86,15 +87,17 @@ public class MIMETest {
 
             // 发送附件
             writer.println("--boundary");
-            writer.println("Content-Type: application/octet-stream");
-            writer.println("Content-Disposition: attachment; filename=\"file.txt\"");
+            writer.println("Content-Type: image/jpeg");
+            writer.println("Content-Transfer-Encoding: base64");
+            writer.println("Content-Disposition: attachment; filename=\"test.jpg\"");//attachment inline
             writer.println();
 
             // 读取附件内容并进行Base64编码后发送
-            Path attachmentPath = Paths.get("D:\\IDEA\\IdeaProjects\\mail-demo\\mail-demo\\src\\com\\cc4cin\\mailtest\\file.txt");
+            Path attachmentPath = Paths.get("D:\\test.jpg");
             byte[] attachmentBytes = Files.readAllBytes(attachmentPath);
             String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
             writer.println(base64EncodedAttachment);
+            //System.out.println(base64EncodedAttachment);
 
             // 结束邮件内容
             writer.println();
