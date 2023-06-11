@@ -1,9 +1,10 @@
 <template>
   <div id="app">
-   <home></home> 
+   <Login></Login>
   </div>
 </template>
 <script>
+import Navigation from "./components/Navigation.vue";
 import Login from "./components/Login.vue";
 import Home from "./components/Home.vue";
 import Welcome from "./components/Welcome.vue";
