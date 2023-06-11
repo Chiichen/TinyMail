@@ -29,9 +29,21 @@ const routes=[
     {
         path:'/home',
         component: Home,
+        redirect: '/welcome',
         children:[
-        {path:'/writing',component: Writing},
-        {path:'/receiving',component: Receiving}]
+            {
+                path:'/welcome',
+                component:Welcome
+            },
+            {
+                path:'/writing',
+                component: Writing
+            },
+            {
+                path:'/receiving',
+                component: Receiving
+            }
+        ]
     },
 
     
