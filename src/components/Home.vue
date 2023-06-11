@@ -1,6 +1,6 @@
 <!-- 邮箱主页的绘制 -->
 <template>
-  <el-container class="home-container">
+  <el-container class="home-container" >
       <el-header><!-- 顶部区域 -->
         <div>
         <span>TinyMail</span>
@@ -68,7 +68,10 @@
 
 <script>
 import emitter from '../event'
+
 export default {
+  name:"Home",
+  
   data(){
     return {
       isWelcome:true
@@ -92,8 +95,8 @@ export default {
       emitter.on('back',this.back)
     },
       logout(){
-          
-      }
+
+      },
   }
 };
 </script>

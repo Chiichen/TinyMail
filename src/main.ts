@@ -7,7 +7,6 @@ import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
-import Welcome from "./components/Welcome.vue"
 
 import './assets/global.css'
 import App from './App.vue'
@@ -30,8 +29,7 @@ const routes=[
     {
         path:'/home',
         component: Home,
-        redirect: '/welcome',
-        children:[{path:'/welcome',component:Welcome},
+        children:[
         {path:'/writing',component: Writing},
         {path:'/receiving',component: Receiving}]
     },

@@ -15,8 +15,11 @@
                  <el-form-item label="主题内容:">
                    <el-input size="medium" type="text" style="width:100%" autocomplete="false" clearable v-model="textform.texttopic"></el-input>
                  </el-form-item>
+                 <!-- 正文内容的Html引入疑点 -->
                  <el-form-item label="正文内容:">
-                   <el-input  type="textarea" style="width:100%"  :rows="17" v-model="textform.textbody"></el-input>
+                   <el-input  type="textarea" style="width:100%"  :rows="17" v-model="textform.textbody" @keydown.ctrl.enter="parseHtml">
+                  <div v-html="formattedHtml"></div>
+                  </el-input>
                  </el-form-item>
                </el-form>
              </el-main>
@@ -36,7 +39,8 @@ import emitter from '../event';
                    textbody:'',
                    texttitle:'',
                     texttopic:'',
-                       }
+                       },
+              formattedHtml:'',
            }
        },
        methods: {
@@ -46,7 +50,10 @@ import emitter from '../event';
         },
         sendout(){
             
-        }
+        },
+        parseHtml(){
+          this.formattedHtml=this.htmlCode;
+        },
        },
    }
 </script>

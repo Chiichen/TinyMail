@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-   <home></home> 
+   <login></login> 
   </div>
 </template>
 <script>

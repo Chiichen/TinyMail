@@ -1,7 +1,17 @@
 <!-- 登录界面的绘制 -->
 <template>
   <div class="loginBody">
-    <div class="loginDiv">
+
+    <!-- 注册界面的绘制 -->
+    <div class="registerDiv" v-if="!ACKLogin">
+      <div>
+        
+      </div>
+
+    </div>
+
+    <!-- 登录界面的绘制 -->
+    <div class="loginDiv" v-if="ACKLogin">
       <div class="logo">
         <img src="img/logo.png" alt="Logo" class="logo-img">
       </div>
@@ -21,7 +31,8 @@
           </el-form-item>
 
           <el-form-item  >
-            <el-button type="primary" @click="submitButton" > 登录</el-button>
+            <el-button type="primary" @click="loginButton"  > 登录</el-button>
+            <el-button type="success" @click="registerButton" plain> 注册</el-button>
           </el-form-item>
 
 
@@ -34,13 +45,14 @@
 </template>
 
 <script >
-
 export default {
-  name:"login",
+  name:"Login",
 
 
   data(){
     return{
+      ACKLogin:true,
+
       loginform:{
         userName:'',
         passWord:'',
@@ -62,9 +74,12 @@ export default {
     }
   },
   methods:{
-    submitButton(){
+    loginButton(){
 
-    }
+    },
+    registerButton(){
+      this.ACKLogin=false;
+    },
   }
 };
 
@@ -99,9 +114,9 @@ export default {
   margin-left: -250px;
   width: 450px;
   height: 330px;
-  background: white;
+  background: rgb(255, 255, 255);
   border-radius: 5%;
-
+  opacity: 80%;
 }
 
 .login-content {
@@ -110,6 +125,19 @@ export default {
   position: absolute;
   top: 100px;
   left: 25px;
+}
+
+.registerDiv{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -250px;
+  width: 450px;
+  height: 330px;
+  background: rgb(255, 255, 255);
+  border-radius: 5%;
+  opacity: 80%;
 }
 
 
