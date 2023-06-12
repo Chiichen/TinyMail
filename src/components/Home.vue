@@ -12,13 +12,13 @@
       </el-button>
       <template #dropdown>
 
-      
+
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item >
           QQ邮箱
         </el-dropdown-item>
 
-        <el-dropdown-item >          
+        <el-dropdown-item >
             163邮箱
         </el-dropdown-item>
 
@@ -28,7 +28,7 @@
       </el-dropdown-menu>
     </template>
     </el-dropdown>
-    
+
     <el-button type="primary" @click="logout">退出</el-button>
       </el-header>
       <!-- 主界面 -->
@@ -38,7 +38,7 @@
             <el-menu
           background-color="#3a3f4f"
           text-color="#fff"
-          active-text-color="#ffd04b">         
+          active-text-color="#ffd04b">
           <el-menu-item index="1" @click="writeLetter">
             <i class="el-icon-menu"></i>
             <span >写信</span>
@@ -47,20 +47,20 @@
             <i class="el-icon-setting"></i>
             <span >收信</span>
           </el-menu-item>
-        </el-menu>           
+        </el-menu>
             </el-aside>
           <!-- 展示区域 -->
           <el-main>
 
           <!-- welcome的默认显示位置 -->
-            <div class="welcome-div" v-if="isWelcome">
+          <div class="welcome-div" v-if="isWelcome">
             <img src="img/welcome.png" alt="Welcome">
             <p>请点击左侧按钮，亲</p>
           </div>
-          
+
           <!-- 写信与收信按钮的实现 -->
-            <router-view v-if="!isWelcome"></router-view>
-              
+            <router-view class="welcome-div" v-if="!isWelcome"></router-view>
+
           </el-main>
       </el-container>
   </el-container>
@@ -71,18 +71,19 @@ import emitter from '../event'
 
 export default {
   name:"Home",
-  
+
   data(){
     return {
       isWelcome:true
-      
+
     }
-    
+
   },
   methods:{
     back(a){
       console.log("回到默认界面",a)
       this.isWelcome=true
+      console.log(this.isWelcome)
     },
     writeLetter(){
       this.$router.push("/Writing")
@@ -110,7 +111,7 @@ export default {
 }
 .el-header{
      background-color:rgb(119, 200, 186);
-     display: flex; 
+     display: flex;
      justify-content: space-between;
      padding-left: 30px;
      align-items: center;
