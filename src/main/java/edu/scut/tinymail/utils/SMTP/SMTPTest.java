@@ -2,14 +2,11 @@ package edu.scut.tinymail.utils.SMTP;
 
 import org.junit.jupiter.api.Test;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import java.io.*;
-import java.net.*;
-import java.nio.charset.StandardCharsets;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.net.Socket;
 import java.util.Base64;
 
 public class SMTPTest {
@@ -355,7 +352,7 @@ public class SMTPTest {
         //发送方地址和接收方地址
         String fromAdress="m15017686102@163.com";
         String toAdress="1405522135@qq.com";
-        //发送方，验证信息，由于邮箱输入信息会使用64编码，因此需要进行编码
+        //发送方，验证信息，由于邮箱输入信息会使用base64编码，因此需要进行编码
         String username="m15017686102@163.com";
         String password="KDONRCKHYQIJKRAF";
         //对username和password进行Base64编码

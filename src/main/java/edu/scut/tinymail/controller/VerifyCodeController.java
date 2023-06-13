@@ -2,9 +2,9 @@ package edu.scut.tinymail.controller;
 
 import com.google.code.kaptcha.Producer;
 import edu.scut.tinymail.domain.ResponseResult;
-import io.swagger.annotations.Api;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-@Api("验证码接口")
+@Tag(name = "VerifyCodeController", description = "验证码接口")
 @Controller
 @RequestMapping("/api/verifyCode")
 @RequiredArgsConstructor

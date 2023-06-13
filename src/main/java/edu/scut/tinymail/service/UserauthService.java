@@ -2,7 +2,8 @@ package edu.scut.tinymail.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import edu.scut.tinymail.domain.ResponseResult;
-import edu.scut.tinymail.domain.entry.Userauth;
+import edu.scut.tinymail.domain.entity.Userauth;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * (Userauth)表服务接口
@@ -14,6 +15,6 @@ public interface UserauthService extends IService<Userauth> {
 
      Userauth getByUsername(String username);
 
-     ResponseResult<?> register(Userauth userauth);
+    ResponseResult<?> register(Userauth userauth, HttpServletRequest request);
 }
 

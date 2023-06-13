@@ -1,6 +1,7 @@
 package edu.scut.tinymail.utils.MIME;
 
-import org.junit.Test;
+import lombok.Data;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.net.Socket;
@@ -9,6 +10,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Base64;
 
+@Data
 public class MIME {
     @Test
     public void test() throws IOException {
@@ -41,7 +43,7 @@ public class MIME {
     String MIME_TYPE = "";
 
 
-    public void MIMESENDER() throws IOException {
+    public void MIMESENDER() {
         try {
             // 创建Socket连接
             Socket socket = new Socket(this.SMTP_SERVER, this.SMTP_PORT);
@@ -147,219 +149,5 @@ public class MIME {
         return Base64.getEncoder().encodeToString(text.getBytes());
     }
 
-    /**
-     * 获取
-     *
-     * @return SMTP_SERVER
-     */
-    public String getSMTP_SERVER() {
-        return SMTP_SERVER;
-    }
 
-    /**
-     * 设置
-     *
-     * @param SMTP_SERVER
-     */
-    public void setSMTP_SERVER(String SMTP_SERVER) {
-        this.SMTP_SERVER = SMTP_SERVER;
-    }
-
-    /**
-     * 获取
-     *
-     * @return SMTP_PORT
-     */
-    public int getSMTP_PORT() {
-        return SMTP_PORT;
-    }
-
-    /**
-     * 设置
-     *
-     * @param SMTP_PORT
-     */
-    public void setSMTP_PORT(int SMTP_PORT) {
-        this.SMTP_PORT = SMTP_PORT;
-    }
-
-    /**
-     * 获取
-     *
-     * @return USERNAME
-     */
-    public String getUSERNAME() {
-        return USERNAME;
-    }
-
-    /**
-     * 设置
-     *
-     * @param USERNAME
-     */
-    public void setUSERNAME(String USERNAME) {
-        this.USERNAME = USERNAME;
-    }
-
-    /**
-     * 获取
-     *
-     * @return PASSWORD
-     */
-    public String getPASSWORD() {
-        return PASSWORD;
-    }
-
-    /**
-     * 设置
-     *
-     * @param PASSWORD
-     */
-    public void setPASSWORD(String PASSWORD) {
-        this.PASSWORD = PASSWORD;
-    }
-
-    /**
-     * 获取
-     *
-     * @return SENDER
-     */
-    public String getSENDER() {
-        return SENDER;
-    }
-
-    /**
-     * 设置
-     *
-     * @param SENDER
-     */
-    public void setSENDER(String SENDER) {
-        this.SENDER = SENDER;
-    }
-
-    /**
-     * 获取
-     *
-     * @return RECEIVER
-     */
-    public String getRECEIVER() {
-        return RECEIVER;
-    }
-
-    /**
-     * 设置
-     *
-     * @param RECEIVER
-     */
-    public void setRECEIVER(String RECEIVER) {
-        this.RECEIVER = RECEIVER;
-    }
-
-    /**
-     * 获取
-     *
-     * @return SUBJECT
-     */
-    public String getSUBJECT() {
-        return SUBJECT;
-    }
-
-    /**
-     * 设置
-     *
-     * @param SUBJECT
-     */
-    public void setSUBJECT(String SUBJECT) {
-        this.SUBJECT = SUBJECT;
-    }
-
-    /**
-     * 获取
-     *
-     * @return CONTENT
-     */
-    public String getCONTENT() {
-        return CONTENT;
-    }
-
-    /**
-     * 设置
-     *
-     * @param CONTENT
-     */
-    public void setCONTENT(String CONTENT) {
-        this.CONTENT = CONTENT;
-    }
-
-    /**
-     * 获取
-     *
-     * @return ATTACHMENT_PATH
-     */
-    public String getATTACHMENT_PATH() {
-        return ATTACHMENT_PATH;
-    }
-
-    /**
-     * 设置
-     *
-     * @param ATTACHMENT_PATH
-     */
-    public void setATTACHMENT_PATH(String ATTACHMENT_PATH) {
-        this.ATTACHMENT_PATH = ATTACHMENT_PATH;
-    }
-
-    /**
-     * 获取
-     *
-     * @return ATTACHMENT_FILENAME
-     */
-    public String getATTACHMENT_FILENAME() {
-        return ATTACHMENT_FILENAME;
-    }
-
-    /**
-     * 设置
-     *
-     * @param ATTACHMENT_FILENAME
-     */
-    public void setATTACHMENT_FILENAME(String ATTACHMENT_FILENAME) {
-        this.ATTACHMENT_FILENAME = ATTACHMENT_FILENAME;
-    }
-
-    /**
-     * 获取
-     *
-     * @return MIME_TYPE
-     */
-    public String getMIME_TYPE(Path path) throws IOException {
-        return Files.probeContentType(path);
-    }
-
-    /**
-     * 设置
-     *
-     * @param MIME_TYPE
-     */
-    public void setMIME_TYPE(String MIME_TYPE) {
-        this.MIME_TYPE = MIME_TYPE;
-    }
-
-    /**
-     * 获取
-     *
-     * @return DOMAINNAME
-     */
-    public String getDOMAIN_NAME() {
-        return DOMAIN_NAME;
-    }
-
-    /**
-     * 设置
-     *
-     * @param DOMAIN_NAME
-     */
-    public void setDOMAIN_NAME(String DOMAIN_NAME) {
-        this.DOMAIN_NAME = DOMAIN_NAME;
-    }
 }

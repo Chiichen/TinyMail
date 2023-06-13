@@ -3,15 +3,18 @@ package edu.scut.tinymail.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import edu.scut.tinymail.domain.ResponseResult;
-import edu.scut.tinymail.domain.entry.Userauth;
+import edu.scut.tinymail.domain.entity.Userauth;
 import edu.scut.tinymail.mapper.UserauthMapper;
 import edu.scut.tinymail.service.UserauthService;
 import edu.scut.tinymail.utils.RedisCache;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+
+import static edu.scut.tinymail.controller.VerifyCodeController.VERIFY_CODE_KEY;
 
 
 /**
@@ -36,7 +39,10 @@ public class UserauthServiceImpl extends ServiceImpl<UserauthMapper, Userauth> i
     }
 
     @Override
-    public ResponseResult<?> register(Userauth userauth) {
+    public ResponseResult<?> register(Userauth userauth, HttpServletRequest request) {
+        if (!userauth.getVc().equals(request.getSession().getAttribute(VERIFY_CODE_KEY)))
+            return new ResponseResult<>(401, "验证码错误");
+
         UserauthMapper userauthMapper = getBaseMapper();
         QueryWrapper<Userauth> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", userauth.getUsername());

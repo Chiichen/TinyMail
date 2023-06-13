@@ -1,6 +1,6 @@
 package edu.scut.tinymail.service.impl;
 
-import edu.scut.tinymail.domain.entry.Userauth;
+import edu.scut.tinymail.domain.entity.Userauth;
 import edu.scut.tinymail.service.UserauthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
