@@ -8,7 +8,7 @@
 
     <el-dropdown trigger="click">
       <el-button type="primary" >
-        切换账号<el-icon class="el-icon--right"><arrow-down /></el-icon>
+        添加账号<el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
       <template #dropdown>
 
