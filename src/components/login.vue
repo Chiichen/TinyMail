@@ -1,6 +1,6 @@
 <!-- 登录界面的绘制 -->
 <template>
-  <div class="loginBody">
+  <div class="loginBody" v-if="isLogin">
 
     <!-- 注册界面的绘制 -->
     <div class="registerDiv" v-if="!ACKLogin">
@@ -51,6 +51,11 @@
             <el-input  type="password" v-model="loginForm.passWord" placeholder="密码"  style="width:200px" show-password autocomplete="false" clearable></el-input>
           </el-form-item>
 
+          <el-form-item  prop="code"  >
+            <el-input  type="text" v-model="loginForm.code" placeholder="验证码"  style="width:100px"  autocomplete="false" clearable></el-input>
+            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
+          </el-form-item>
+
           <el-form-item  >
             <el-button type="primary" @click="loginButton"  > 登录</el-button>
             <el-button type="success" @click="registerButton" plain> 注册</el-button>
@@ -63,20 +68,26 @@
 
     </div>
   </div>
+  <router-view v-if="!isLogin"></router-view>
 </template>
 
 <script >
+import axios from 'axios'
+import {getCurrentInstance} from 'vue'
 export default {
   name:"Login",
 
 
   data(){
     return{
+      isLogin:true,
+      base64Data:'',
       ACKLogin:true,
 
       loginForm:{
         userName:'',
         passWord:'',
+        code:''
       },
       loginRules:{
         userName:[{ required: true, message: "请输入账号", trigger: "blur" },{
@@ -115,12 +126,102 @@ export default {
 
     }
   },
+  computed: {
+  imageDataUrl() {
+    return `data:image/jpeg;base64,${this.base64Data}`;
+  }
+  },
   methods:{
+    clickImg(){
+      axios({
+        method: 'get',
+        url: '/api/api/verifyCode/base64'
+      }).then(res=>{
+        console.log(res)
+        this.base64Data=res.data.msg
+      }).catch(res=>{
+        console.log(res)
+      })
+    },
     loginButton(){
-      /* 添加提交的部分 */
+      /*
+    post常用的请求数据（data）格式有两种：
+    （1）applicition/json
+    （2）form-data 表单提交（图片上传，文件上传）
+     */
+
+      //第一种写法叫做post别名请求方法
+      // http://localhost:8080/static/data.json?id=1
+      // applicition/json 请求
+      // let data = {
+      //   id: 1
+      // }
+      // axios.post('../../static/data.json', data)
+      //     .then((res) => {
+      //       console.log('数据：', res);
+      //     })
+      //第二种写法
+      // axios({
+      //   method: 'post',
+      //   url: '../../static/data.json',
+      //   data: data,
+      // }).then((res) => {
+      //   console.log('数据：', res)
+      // })
+      // form-data 请求
+      // let formData = new FormData()
+      // for (let key in data) {
+      //   formData.append(key, data[key])
+      // }
+      // axios.post('../../static/data.json', formData)
+      //     .then((res) => {
+      //       console.log('数据：', res);
+      //     })
+
+
+      // console.log(proxy);
+        let reqData={
+          username:this.loginform.userName,
+          nickname:"",
+          password:this.loginform.passWord,
+          authorities:this.loginform.code
+        }
+        // proxy.axios.post({
+        //   url: '/api/api/user/register',
+        //   data: data}).then(res=>{
+        //     console.log(res)
+        // })
+      // http://localhost:9000/api/verifyCode/image
+        axios({
+          method: 'post',
+          url: '/api/api/user/login?username='+this.loginform.userName+"&password="+this.loginform.passWord+"&vc="+this.loginform.code,
+        }).then(res=>{
+          console.log(res)
+          this.$router.push("/home")
+          this.isLogin=false
+        }).catch(res=>{
+          console.log(res)
+        })
+
     },
     registerButton(){
       this.ACKLogin=false;
+      let reqData={
+        username:this.loginform.userName,
+        nickname:"",
+        password:this.loginform.passWord,
+        authorities:this.loginform.code
+      }
+      axios({
+        method: 'post',
+        url: '/api/api/user/register?username='+this.loginform.userName+"&password="+this.loginform.passWord+"&vc="+this.loginform.code,
+      }).then(res=>{
+        console.log(res)
+      }).catch(res=>{
+        console.log(res)
+      })
+
+
     },
     returnLogin(){
       this.ACKLogin=true;
@@ -129,6 +230,17 @@ export default {
       this.ACKLogin=true;
       /* 添加提交的部分 */
     },
+  },
+  mounted() {
+    axios({
+      method: 'get',
+      url: '/api/api/verifyCode/base64',
+    }).then(res=>{
+      console.log(res)
+      this.base64Data=res.data.msg
+    }).catch(res=>{
+      console.log(res)
+    })
   }
 };
 

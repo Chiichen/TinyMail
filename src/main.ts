@@ -13,7 +13,7 @@ import App from './App.vue'
 import 'element-plus/dist/index.css'
 
 const routes=[
-    
+
     {
         path:'/Login',
         component: Login,
@@ -32,18 +32,18 @@ const routes=[
         children:[
 
             {
-                path:'/writing',
+                path:'/Writing',
                 component: Writing
             },
             {
-                path:'/receiving',
+                path:'/Receiving',
                 component: Receiving
             }
         ]
     },
 
-    
-    
+
+
 ];
 
 const router=createRouter({
