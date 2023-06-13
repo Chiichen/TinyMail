@@ -19,4 +19,6 @@ public interface UsersettingMapper extends BaseMapper<Usersetting> {
 
     @Select("select * from usersetting where username=#{username}")
     List<Usersetting> getByName(String username);
+
+
 }

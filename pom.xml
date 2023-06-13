@@ -19,11 +19,17 @@
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
 
+        <!--aop 切面-->
         <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>jakarta.mail</artifactId>
-            <version>1.6.7</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
+
+        <!--        <dependency>-->
+        <!--            <groupId>com.sun.mail</groupId>-->
+        <!--            <artifactId>jakarta.mail</artifactId>-->
+        <!--            <version>1.6.7</version>-->
+        <!--        </dependency>-->
         <!--fastjson依赖-->
         <dependency>
             <groupId>com.alibaba</groupId>

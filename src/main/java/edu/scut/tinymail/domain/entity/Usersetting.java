@@ -1,6 +1,6 @@
 package edu.scut.tinymail.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,8 +20,7 @@ import lombok.NoArgsConstructor;
 @TableName("usersetting")
 public class Usersetting {
 
-    @TableField("settingid")
-
+    @TableId("settingid")
     private Long settingid;
 
     private String username;
@@ -31,7 +30,10 @@ public class Usersetting {
     private String serverusername;
 
     private String serverpassword;
-    //0 for smtp, 1 for imap, 2 for sth else
+
+    /**
+     * 0 for smtp, 1 for imap, 2 for sth else
+     */
     private Integer type;
 
 
@@ -41,6 +43,16 @@ public class Usersetting {
         this.serverusername = serverusername;
         this.serverpassword = serverpassword;
         this.type = type;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        return (object instanceof Usersetting)
+                && ((Usersetting) object).getUsername().equals(username)
+                && ((Usersetting) object).getServername().equals(servername)
+                && ((Usersetting) object).getServerusername().equals(serverusername)
+                && ((Usersetting) object).getServerpassword().equals(serverpassword)
+                && ((Usersetting) object).getType().equals(type);
     }
 }
 

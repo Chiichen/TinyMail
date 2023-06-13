@@ -37,6 +37,8 @@ public class UserController {
     @Operation(summary = "给指定用户添加配置信息")
     @PostMapping("/api/user/addsetting")
     public ResponseResult<?> addEmailSettings(Usersetting usersetting) {
+        if (userauthService.getByUsername(usersetting.getUsername()) == null)
+            return new ResponseResult<>(403, "该用户不存在");
         return usersettingService.addUserSetting(usersetting);
     }
 
@@ -47,5 +49,19 @@ public class UserController {
         return usersettingService.getByName(username);
     }
 
+    @Operation(summary = "修改配置信息(修改某个邮箱配置项的账号密码)")
+    @PostMapping("api/user/setsetting")
+    public ResponseResult<?> setUserSetting(Usersetting usersetting) {
+        if (userauthService.getByUsername(usersetting.getUsername()) == null)
+            return new ResponseResult<>(403, "用户不存在");
+        else return usersettingService.setUserSetting(usersetting);
+    }
+
+    @Operation(summary = "删除某个邮箱配置")
+    @PostMapping("api/user/deletesetting")
+    public ResponseResult<?> deleteUserSetting(String username, String servername) {
+        if (userauthService.getByUsername(username) == null) return new ResponseResult<>(403, "用户不存在");
+        else return usersettingService.deleteSetting(username, servername);
+    }
 
 }

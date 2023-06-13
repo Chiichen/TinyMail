@@ -16,26 +16,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringDocConfig {
 
-//    @Bean
-//    public OpenAPI mallTinyOpenAPI() {
-//        return new OpenAPI()
-//                .info(new Info().title("Mall-Tiny API")
-//                        .description("SpringDoc API 演示")
-//                        .version("v1.0.0")
-//                        .license(new License().name("Apache 2.0").url("https://github.com/macrozheng/mall-learning")))
-//                .externalDocs(new ExternalDocumentation()
-//                        .description("SpringBoot实战电商项目mall（50K+Star）全套文档")
-//                        .url("http://www.macrozheng.com"))
-//                .addSecurityItem(new SecurityRequirement().addList(SECURITY_SCHEME_NAME))
-//                .components(new Components()
-//                        .addSecuritySchemes(SECURITY_SCHEME_NAME,
-//                                new SecurityScheme()
-//                                        .name(SECURITY_SCHEME_NAME)
-//                                        .type(SecurityScheme.Type.HTTP)
-//                                        .scheme("bearer")
-//                                        .bearerFormat("JWT")));
-//    }
-
 
     private License license() {
         return new License()
@@ -45,16 +25,16 @@ public class SpringDocConfig {
 
     private Info info() {
         return new Info()
-                .title("Ya API")
-                .description("A test project for Mr.Ya.")
+                .title("Tiny Mail接口文档")
+                .description("关于华南理工大学软件开发实训项目TinyMail的接口文档")
                 .version("v1.0.0")
                 .license(license());
     }
 
     private ExternalDocumentation externalDocumentation() {
         return new ExternalDocumentation()
-                .description("这是一个额外的描述。")
-                .url("https://shijizhe.github.io/");
+                .description("有问题请致电")
+                .url("https://www.google.com");
     }
 
     @Bean
@@ -66,19 +46,4 @@ public class SpringDocConfig {
 }
 
 
-//    @Bean
-//    public GroupedOpenApi publicApi() {
-//        return GroupedOpenApi.builder()
-//                .group("user")
-//                .pathsToMatch("/api/user/**")
-//                .build();
-//    }
-//
-//    @Bean
-//    public GroupedOpenApi adminApi() {
-//        return GroupedOpenApi.builder()
-//                .group("mail")
-//                .pathsToMatch("/api/mail/**")
-//                .build();
-//
-//    }
+

@@ -12,9 +12,18 @@ import edu.scut.tinymail.domain.entity.Usersetting;
  */
 public interface UsersettingService extends IService<Usersetting> {
 
-        public ResponseResult<?> addUserSetting(Usersetting usersetting);
+        ResponseResult<?> addUserSetting(Usersetting usersetting);
 
-        public ResponseResult<?> getByName(String username);
+        ResponseResult<?> getByName(String username);
+
+        ResponseResult<?> setUserSetting(Usersetting usersetting);
+
+        /*
+        只需要用户名和要获取的服务器信息就可以唯一获取一个服务器类型
+         */
+        Usersetting getSetting(String username, String server);
+
+        ResponseResult<?> deleteSetting(String username, String server);
 
 }
 

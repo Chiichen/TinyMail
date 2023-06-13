@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 @Tag(name = "MailController", description = "邮件接口")
 @RestController
 public class MailController {
@@ -25,9 +27,13 @@ public class MailController {
     @PostMapping("/api/mail/send")
     //@PreAuthorize("hasAuthority('user')")
     public ResponseResult<?> sendMail(
+            @Parameter(description = "发送邮件的用户名")
+            String username,
+            @Parameter(description = "用来发送邮件的smtp服务器")
+            String smtpserver,
             @Parameter(description = "需要发送的邮件信息")
             Mail mail) {
-        mailService.send(mail);//Todo send抛出异常后，后面的return还会执行吗
+        mailService.send(username, smtpserver, mail);//send抛出异常后，由handler来接管，后面的return就不会执行。
         return new ResponseResult<>(200, "success", mail);
     }
 
@@ -35,12 +41,21 @@ public class MailController {
     @PostMapping("/api/mail/attachedsend")
     //@PreAuthorize("hasAuthority('user')")
     public ResponseResult<?> sendAttachedMail(
+            @Parameter(description = "发送邮件的用户名")
+            String username,
+            @Parameter(description = "用来发送邮件的smtp服务器")
+            String smtpserver,
             @Parameter(description = "需要发送的邮件信息")
             Mail mail,
             @Parameter(description = "需要发送的附件")
-            MultipartFile file) {
-        mailService.send(mail);//Todo send抛出异常后，后面的return还会执行吗
+            MultipartFile[] files) throws IOException {
+        mailService.attachedSend(username, smtpserver, mail, files);//send抛出异常后，由handler来接管，后面的return就不会执行。
         return new ResponseResult<>(200, "success", mail);
+    }
+
+    public ResponseResult<?> gerMails(String username, String imapserver) {
+
+        return mailService.getMails(username, imapserver);
     }
 
 
@@ -49,6 +64,5 @@ public class MailController {
     public ResponseResult<?> okForever(HttpServletRequest request, HttpServletResponse response) {
         return new ResponseResult<>(200, "ok");
     }
-
 
 }
