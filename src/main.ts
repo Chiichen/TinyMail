@@ -8,12 +8,17 @@ import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
 import Welcome from "./components/Welcome.vue"
+import email from "./components/email.vue";
 
 import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
 
 const routes=[
+    {
+        path:'/email/:id',
+        component: email,
+    },
     
     {
         path:'/Login',
