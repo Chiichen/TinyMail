@@ -34,7 +34,7 @@ public class MIME {
     //发件人
     String SENDER = USERNAME;
     //收件人
-    String RECEIVER = "1277719855@qq.com";//13712922800@163.com
+    String RECEIVER = "13712922800@163.com";
     //邮件标题
     String SUBJECT = "TEST Email";
     //邮件正文
@@ -226,6 +226,23 @@ public class MIME {
             Path attachmentPath = Paths.get(this.ATTACHMENT_PATH);
             byte[] attachmentBytes = Files.readAllBytes(attachmentPath);
             String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
+            sendCommand(writer, base64EncodedAttachment);
+            //System.out.println(base64EncodedAttachment);
+
+            // 发送附件2
+            setATTACHMENT_PATH("D:\\test.txt");
+            setATTACHMENT_FILENAME("test.txt");
+            sendCommand(writer, "--boundary");
+            writer.println("Content-Type: application/octet-stream");
+            writer.println("Content-Transfer-Encoding: base64");
+            writer.println("Content-Disposition: attachment; " +
+                    "filename=\"" + this.ATTACHMENT_FILENAME + "\"");//attachment OR inline
+            writer.println();
+
+            // 读取附件内容并进行Base64编码后发送
+            attachmentPath = Paths.get(this.ATTACHMENT_PATH);
+            attachmentBytes = Files.readAllBytes(attachmentPath);
+            base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
             sendCommand(writer, base64EncodedAttachment);
             //System.out.println(base64EncodedAttachment);
 
