@@ -1,6 +1,6 @@
 package edu.scut.tinymail.utils.SMTP;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -345,7 +345,7 @@ public class SMTPTest {
 //       }
 //    }
     public void smtp(){
-        String msg="\r\n This is a test email!";
+        String msg = "\r\n This is a test email!";
         //String endmsg="\r\n.\r\n";
         //选择一个邮件服务
         String mailServer="smtp.163.com";
@@ -381,6 +381,8 @@ public class SMTPTest {
         bufferedWriter.flush();
 
         //发送MAIL FROM命令，并包含发件人邮箱
+
+
         bufferedWriter.write("MAIL FROM: <"+fromAdress+">\r\n");
         bufferedWriter.flush();
 
