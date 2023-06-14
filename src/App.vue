@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-   <Login></Login>
+   <login></login>
   </div>
 </template>
 <script>
@@ -10,6 +10,7 @@ import Home from "./components/Home.vue";
 import Welcome from "./components/Welcome.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+import Set from './components/Set.vue';
 
 export default{
   data(){
@@ -23,7 +24,8 @@ export default{
     Writing,
     Receiving,
     Welcome,
-  }
+    Set,
+    }
 }
 </script>
 <style>

@@ -10,6 +10,7 @@ import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+import Set from "./components/Set.vue";
 
 import './assets/global.css'
 import App from './App.vue'
@@ -36,6 +37,10 @@ const routes=[
             }
         ]
     },
+    {
+        path:'/set',
+        component:Set,
+    }
 
 
 
