@@ -5,26 +5,21 @@
         <div>
         <span>TinyMail</span>
     </div>
-
+    
     <el-dropdown trigger="click">
-      <el-button type="primary" >
-        添加账号<el-icon class="el-icon--right"><arrow-down /></el-icon>
+      <el-button   type="primary" >
+        设置<el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
       <template #dropdown>
 
 
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item >
-          QQ邮箱
-        </el-dropdown-item>
 
-        <el-dropdown-item >
-            163邮箱
+        <el-dropdown-item @click="">
+            <el-icon><CirclePlusFilled /></el-icon>添加邮箱
         </el-dropdown-item>
+        
 
-        <el-dropdown-item >
-            谷歌邮箱
-        </el-dropdown-item>
       </el-dropdown-menu>
     </template>
     </el-dropdown>
@@ -54,12 +49,12 @@
 
           <!-- welcome的默认显示位置 -->
           <div class="welcome-div" v-if="isWelcome">
-            <img src="img/welcome.png" alt="Welcome">
+            <img src="/img/welcome.png" alt="Welcome">
             <p>请点击左侧按钮，亲</p>
           </div>
 
           <!-- 写信与收信按钮的实现 -->
-            <router-view class="welcome-div" v-if="!isWelcome"></router-view>
+            <router-view  v-if="!isWelcome"></router-view>
 
           </el-main>
       </el-container>
@@ -86,12 +81,12 @@ export default {
       console.log(this.isWelcome)
     },
     writeLetter(){
-      this.$router.push("/Writing")
+      this.$router.push("/home/Writing")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
     receiveLetter(){
-      this.$router.push("/Receiving")
+      this.$router.push("/home/Receiving")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
@@ -118,6 +113,7 @@ export default {
      color: #fff;
      font-size: 40px;
  }
+
   .el-aside{
      background-color: #3a3f4f;
  }

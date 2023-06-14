@@ -5,10 +5,15 @@
     <!-- 注册界面的绘制 -->
     <div class="registerDiv" v-if="!ACKLogin">
       <div class="registerHeader">
-        <el-button bg text color="#AFEEEE" @click="returnLogin">返回</el-button>
+        <el-button bg text color="#AFEEEE" @click="returnLogin" class="outButton"><el-icon><Back /></el-icon>返回</el-button>
+        <img src="img/logo.png" alt="Logo" class="logo-RE">
       </div>
       <div class="register-content">
         <el-form :model="registerForm" label-width="100px" :rules="registerRules">
+          <el-form-item prop="setNickName" label="昵称">
+            <el-input size="medium" type="text" v-model="registerForm.setNickName" style="width:200px"></el-input>
+          </el-form-item>
+
           <el-form-item prop="setUserName" label="用户名">
             <el-input  size="medium" type="text" v-model="registerForm.setUserName" style="width:200px"></el-input>
           </el-form-item>
@@ -17,13 +22,14 @@
             <el-input  size="medium" type="password" v-model="registerForm.setPassWord" style="width:200px" show-password></el-input>
           </el-form-item>
 
-          <el-form-item label="验证码">
-            
+          <el-form-item  prop="REcode" label="验证码" >
+            <el-input  type="text" v-model="registerForm.REcode"   style="width:100px"  autocomplete="false" ></el-input>
+            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
           </el-form-item>
 
           <!-- 在上述账号密码格式都正确的情况下才能确定的功能还没实现 -->
           <el-form-item>
-            <el-button type="success" @click="overRegister">确认</el-button>
+            <el-button type="success" @click="overRegister" >确认</el-button>
           </el-form-item>
 
         </el-form>
@@ -104,11 +110,15 @@ export default {
         }],
       },
       registerForm:{
+        setNickName:'',
         setUserName:'',
         setPassWord:'',
+        REcode:'',
+        
       },
       registerRules:{
-        setUserName:[{required:true,message:"请输入所要注册的账号",trigger:"blur"},{
+        setNickName:[{required:true,message:"请输入所要注册的账号昵称",trigger:"blur"}],
+        setUserName:[{required:true,message:"请输入所要注册的账号用户名",trigger:"blur"},{
           min:10,
           max:20,
           message:"账号长度应为10到20位",
@@ -181,10 +191,10 @@ export default {
 
       // console.log(proxy);
         let reqData={
-          username:this.loginform.userName,
+          username:this.loginForm.userName,
           nickname:"",
-          password:this.loginform.passWord,
-          authorities:this.loginform.code
+          password:this.loginForm.passWord,
+          authorities:this.loginForm.code
         }
         // proxy.axios.post({
         //   url: '/api/api/user/register',
@@ -194,27 +204,28 @@ export default {
       // http://localhost:9000/api/verifyCode/image
         axios({
           method: 'post',
-          url: '/api/api/user/login?username='+this.loginform.userName+"&password="+this.loginform.passWord+"&vc="+this.loginform.code,
+          url: '/api/api/user/login?username='+this.loginForm.userName+"&password="+this.loginForm.passWord+"&vc="+this.loginForm.code,
         }).then(res=>{
           console.log(res)
-          this.$router.push("/home")
-          this.isLogin=false
+
         }).catch(res=>{
           console.log(res)
         })
+                  this.$router.push("/home")
+          this.isLogin=false
 
     },
     registerButton(){
       this.ACKLogin=false;
       let reqData={
-        username:this.loginform.userName,
+        username:this.loginForm.userName,
         nickname:"",
-        password:this.loginform.passWord,
-        authorities:this.loginform.code
+        password:this.loginForm.passWord,
+        authorities:this.loginForm.code
       }
       axios({
         method: 'post',
-        url: '/api/api/user/register?username='+this.loginform.userName+"&password="+this.loginform.passWord+"&vc="+this.loginform.code,
+        url: '/api/api/user/register?username='+this.loginForm.userName+"&password="+this.loginForm.passWord+"&vc="+this.loginForm.code,
       }).then(res=>{
         console.log(res)
       }).catch(res=>{
@@ -225,6 +236,9 @@ export default {
     },
     returnLogin(){
       this.ACKLogin=true;
+    },
+    isDisabled(){
+      
     },
     overRegister(){
       this.ACKLogin=true;
@@ -302,14 +316,24 @@ export default {
 }
 
 .registerHeader{
+  display: flex;
   padding-left: 7%;
   padding-top: 5%;
 }
 
+.outButton{
+  margin-right:30px;
+}
+
+.logo-RE{
+  height: 40px;
+  width: 200px;
+}
 .register-content{
-  padding-top: 30px;
+  padding-top: 15px;
   padding-left:30px
 }
+
 
 
 </style>
