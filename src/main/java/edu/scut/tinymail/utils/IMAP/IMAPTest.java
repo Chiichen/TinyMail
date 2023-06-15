@@ -1,7 +1,8 @@
 package edu.scut.tinymail.utils.IMAP;
 
 import io.swagger.models.auth.In;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.Test;
+
 
 import java.io.*;
 import java.net.Socket;
