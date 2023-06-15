@@ -1,7 +1,8 @@
 package edu.scut.tinymail.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import edu.scut.tinymail.domain.entry.Userauth;
+import edu.scut.tinymail.domain.entity.Userauth;
+import org.springframework.stereotype.Repository;
 
 
 /**
@@ -10,6 +11,7 @@ import edu.scut.tinymail.domain.entry.Userauth;
  * @author makejava
  * @since 2023-05-27 00:45:07
  */
+@Repository
 public interface UserauthMapper extends BaseMapper<Userauth> {
 
 }

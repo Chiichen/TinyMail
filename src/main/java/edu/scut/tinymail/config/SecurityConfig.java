@@ -40,15 +40,27 @@ public class SecurityConfig {
     /**
      * 接口文档放行
      */
-    public static final List<String> DOC_WHITE_LIST = List.of("/doc.html", "/webjars/**", "/v3/api-docs/**");
+    public static final List<String> DOC_WHITE_LIST = List.of("/doc.html", "/webjars/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/index.html");
     /**
      * 测试接口放行
      */
-    public static final List<String> TEST_WHITE_LIST = List.of("/test/**");
+    public static final List<String> TEST_WHITE_LIST = List.of("/test/**", "/api/mail/**");
     /**
      * 验证码放行
      */
     public static final List<String> VERIFY_CODE_WHITE_LIST = List.of("/api/verifyCode/**");
+
+    /**
+     * 注册放行
+     */
+    public static final List<String> REGISTER_WHITE_LIST = List.of("/api/user/register");
+
+    /**
+     * swagger文档放行
+     */
+
+
+    public static final List<String> SWAGGER_UI_LIST = List.of("/swagger-ui/index.html", "swagger-ui.html");
 
     /**
      * 获取AuthenticationManager（认证管理器），登录时认证使用
@@ -97,26 +109,24 @@ public class SecurityConfig {
         http.authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET, DOC_WHITE_LIST.toArray(new String[0])).permitAll()
                 .requestMatchers(HttpMethod.GET, VERIFY_CODE_WHITE_LIST.toArray(new String[0])).permitAll()
-//                .requestMatchers(HttpMethod.GET, TEST_WHITE_LIST.toArray(new String[0])).permitAll()
-                .anyRequest().authenticated()
-        ;
+                .requestMatchers(HttpMethod.POST, TEST_WHITE_LIST.toArray(new String[0])).permitAll()
+                .requestMatchers(HttpMethod.POST, REGISTER_WHITE_LIST.toArray(new String[0])).permitAll()
+                //.anyRequest().authenticated()
+                .anyRequest().permitAll()
 
+
+        ;
         //登陆
         http.addFilterAt(loginFilter, UsernamePasswordAuthenticationFilter.class);
-
         //配置自定义登陆流程后需要关闭 否则可以使用原有登陆方式
-
         //登出
         http.logout().logoutUrl("/api/user/logout").logoutSuccessHandler(authenticationHandler);
-
         //禁用 csrf
         http.csrf().disable();
-
         //csrf验证 存储到Cookie中
 //        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())
 //        ;
-
         //会话管理
         http.sessionManagement()
                 .maximumSessions(1)
@@ -126,20 +136,15 @@ public class SecurityConfig {
         //禁止后登陆挤下线
 //               .maxSessionsPreventsLogin(true)
         ;
-
         //rememberMe
         http.rememberMe().rememberMeServices(rememberMeServices);
-
         // 权限不足时的处理
         http.exceptionHandling()
                 .accessDeniedHandler(authenticationHandler)
                 .authenticationEntryPoint(authenticationHandler)
         ;
-
         return http.build();
     }
-
-
 }
 
 

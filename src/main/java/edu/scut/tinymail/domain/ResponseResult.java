@@ -2,11 +2,13 @@ package edu.scut.tinymail.domain;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.ToString;
 
 /**
  * &#064;Author  ChiChen
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
+@ToString
 public class ResponseResult<T> {
     /**
      * 状态码
