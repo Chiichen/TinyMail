@@ -56,7 +56,7 @@
           </div>
 
           <!-- 写信与收信按钮的实现 -->
-            <router-view  v-if="!isWelcome"></router-view>
+            <router-view   v-if="!isWelcome"></router-view>
 
           </el-main>
       </el-container>
@@ -81,6 +81,7 @@ export default {
       console.log("回到默认界面",a)
       this.isWelcome=true
       console.log(this.isWelcome)
+
     },
     writeLetter(){
       this.$router.push("/home/Writing")

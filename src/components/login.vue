@@ -114,7 +114,7 @@ export default {
         setUserName:'',
         setPassWord:'',
         REcode:'',
-        
+
       },
       registerRules:{
         setNickName:[{required:true,message:"请输入所要注册的账号昵称",trigger:"blur"}],
@@ -129,9 +129,9 @@ export default {
           message:"密码长度应为6到20位,同时需包含字母、符号与数字中的至少两种",
           trigger:'blur'
         }],
-        
 
-        
+
+
       },
 
     }
@@ -211,8 +211,8 @@ export default {
         }).catch(res=>{
           console.log(res)
         })
-                  this.$router.push("/home")
-          this.isLogin=false
+        this.$router.push("/home")
+        this.isLogin=false
 
     },
     registerButton(){
@@ -238,7 +238,7 @@ export default {
       this.ACKLogin=true;
     },
     isDisabled(){
-      
+
     },
     overRegister(){
       this.ACKLogin=true;
