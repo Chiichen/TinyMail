@@ -5,9 +5,9 @@
         <div>
         <span>TinyMail</span>
     </div>
-    
+    <div class="headerButton">
     <el-dropdown trigger="click">
-      <el-button   type="primary" >
+      <el-button class="setButton"  type="primary" >
         <el-icon><Setting /></el-icon>设置<el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
       <template #dropdown>
@@ -25,7 +25,9 @@
     </el-dropdown>
 
     <el-button type="primary" @click="logout"><el-icon><Edit /></el-icon>退出</el-button>
-      </el-header>
+     </div> 
+    
+    </el-header>
       <!-- 主界面 -->
       <el-container>
           <!-- 控制区域 -->
@@ -116,6 +118,15 @@ export default {
      align-items: center;
      color: #fff;
      font-size: 40px;
+ }
+
+ .headerButton{
+  display: flex;
+  
+ }
+
+ .setButton{
+  margin-right:30px;
  }
 
   .el-aside{

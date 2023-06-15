@@ -34,14 +34,14 @@ export default{
     },
     methods: {
         add(){
-
+            this.$router.push("/home");
         },
         return_back(){
             this.$router.push("/home");
         },
         want_help(){
 
-        },
+        },  
     },
 }
 </script>
