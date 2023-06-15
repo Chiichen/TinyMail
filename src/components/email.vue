@@ -6,16 +6,18 @@
       </el-form>
     </el-header>
     <el-main>
-      <div class="email-header">
-        <div class="email-sender">发件人：{{ email.sender }}</div>
-        <div class="email-time">时间：{{ email.time }}</div>
-      </div>
-      <div class="email-body">
-        <div class="email-content">{{ email.content }}</div>
-        <div class="email-attachments">
-          <el-button type="primary" @click="showAttachments" v-if="email.attachments.length > 0">
-            附件 ({{ email.attachments.length }})
-          </el-button>
+      <div v-for="email in emails" :key="email.id">
+        <div class="email-header">
+          <div class="email-sender">发件人：{{ email.sender }}</div>
+          <div class="email-time">时间：{{ email.time }}</div>
+        </div>
+        <div class="email-body">
+          <div class="email-content">{{ email.subject }}</div>
+          <div class="email-attachments">
+            <el-button type="primary" @click="showAttachments" v-if="email.attachments.length > 0">
+              附件 ({{ email.attachments.length }})
+            </el-button>
+          </div>
         </div>
       </div>
     </el-main>
@@ -26,18 +28,11 @@
 import emitter from '../event';
 
 export default {
-
-  data() {
-    return {
-      email: {
-        sender: '',
-        time: '',
-        content: '',
-        attachments: [
-          //可以在里面写附件的展示逻辑
-        ],
-      },
-    };
+  props:{
+    emails:{
+      type:Array,
+      required:true,
+    }
   },
   methods: {
     goBack() {

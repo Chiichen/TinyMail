@@ -49,7 +49,9 @@
 
              <el-footer>
                 <el-form class="sendoutForm">
-                    <el-button type="primary" @click="sendout">发送</el-button>
+                    <el-button type="primary" @click="sendout"><el-icon><Promotion /></el-icon>发送</el-button> 
+
+3 
                 </el-form>
              </el-footer>
            </el-container>
