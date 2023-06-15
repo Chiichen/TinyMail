@@ -32,11 +32,11 @@ const routes=[
         children:[
 
             {
-                path:'/Writing',
+                path:'Writing',
                 component: Writing
             },
             {
-                path:'/Receiving',
+                path:'Receiving',
                 component: Receiving
             }
         ]

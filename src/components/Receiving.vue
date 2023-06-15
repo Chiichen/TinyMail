@@ -18,6 +18,8 @@
         <el-input size="medium" placeholder="搜索邮件" v-model="searchKeyword" clearable></el-input>
       </el-form>
     </el-footer>
+<!--    <iframe src="https://www.w3school.com.cn/jsref/dom_obj_frame.asp" style="height: 1000px"></iframe>-->
+    <div v-html="htmlContent"></div>
   </el-container>
 </template>
 
@@ -27,12 +29,13 @@ import emitter from '../event';
 export default {
   data() {
     return {
-      emails: {
-        sender:'',
-        time:'',
-        content:'',
-      },
+      emails: [{
+        sender:'xwb',
+        time:'1010101',
+        content:'123123',
+      }],
       searchKeyword: '',
+      htmlContent:"<h1>Hello, World!</h1>"//显示html的1
     };
   },
 

@@ -26,6 +26,7 @@
 import emitter from '../event';
 
 export default {
+
   data() {
     return {
       email: {

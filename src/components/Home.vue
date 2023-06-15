@@ -54,12 +54,12 @@
 
           <!-- welcome的默认显示位置 -->
           <div class="welcome-div" v-if="isWelcome">
-            <img src="img/welcome.png" alt="Welcome">
+            <img src="/img/welcome.png" alt="Welcome">
             <p>请点击左侧按钮，亲</p>
           </div>
 
           <!-- 写信与收信按钮的实现 -->
-            <router-view class="welcome-div" v-if="!isWelcome"></router-view>
+            <router-view   v-if="!isWelcome"></router-view>
 
           </el-main>
       </el-container>
@@ -84,14 +84,15 @@ export default {
       console.log("回到默认界面",a)
       this.isWelcome=true
       console.log(this.isWelcome)
+
     },
     writeLetter(){
-      this.$router.push("/Writing")
+      this.$router.push("/home/Writing")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
     receiveLetter(){
-      this.$router.push("/Receiving")
+      this.$router.push("/home/Receiving")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
