@@ -2,58 +2,48 @@ import { createApp } from 'vue'
 import ElementPlus from 'element-plus'
 import { createRouter, createWebHistory } from 'vue-router';
 
+/* 添加icon图标 */
+import * as ElementPlusIconsVue from '@element-plus/icons-vue'
+
 /* 路由配置 */
 import Home from "./components/Home.vue";
 import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
-import Welcome from "./components/Welcome.vue"
-import email from "./components/email.vue";
+import Set from "./components/Set.vue";
 
 import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
 
 const routes=[
-    {
-        path:'/email/:id',
-        component: email,
-    },
-    
+
     {
         path:'/Login',
         component: Login,
     },
     {
-        path:'/Writing',
-        component:Writing
-    },
-    {
-        path:'/Receiving',
-        component:Receiving
-    },
-    {
         path:'/home',
         component: Home,
-        redirect: '/welcome',
         children:[
+
             {
-                path:'/welcome',
-                component:Welcome
-            },
-            {
-                path:'/writing',
+                path:'Writing',
                 component: Writing
             },
             {
-                path:'/receiving',
+                path:'Receiving',
                 component: Receiving
             }
         ]
     },
+    {
+        path:'/set',
+        component:Set,
+    }
 
-    
-    
+
+
 ];
 
 const router=createRouter({
@@ -65,3 +55,7 @@ const app=createApp(App);
 
 app.use(ElementPlus)
 app.use(router).mount('#app');
+
+for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
+    app.component(key, component)
+  }

@@ -1,35 +1,30 @@
 <!-- 邮箱主页的绘制 -->
 <template>
-  <el-container class="home-container">
+  <el-container class="home-container" >
       <el-header><!-- 顶部区域 -->
         <div>
         <span>TinyMail</span>
     </div>
-
+    
     <el-dropdown trigger="click">
-      <el-button type="primary" >
-        切换账号<el-icon class="el-icon--right"><arrow-down /></el-icon>
+      <el-button   type="primary" >
+        <el-icon><Setting /></el-icon>设置<el-icon class="el-icon--right"><arrow-down /></el-icon>
       </el-button>
       <template #dropdown>
 
-      
+
       <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item >
-          QQ邮箱
-        </el-dropdown-item>
 
-        <el-dropdown-item >          
-            163邮箱
+        <el-dropdown-item @click="want_set">
+            <el-icon><CirclePlusFilled /></el-icon>添加邮箱
         </el-dropdown-item>
+        
 
-        <el-dropdown-item >
-            谷歌邮箱
-        </el-dropdown-item>
       </el-dropdown-menu>
     </template>
     </el-dropdown>
-    
-    <el-button type="primary" @click="logout">退出</el-button>
+
+    <el-button type="primary" @click="logout"><el-icon><Edit /></el-icon>退出</el-button>
       </el-header>
       <!-- 主界面 -->
       <el-container>
@@ -38,29 +33,29 @@
             <el-menu
           background-color="#3a3f4f"
           text-color="#fff"
-          active-text-color="#ffd04b">         
+          active-text-color="#ffd04b">
           <el-menu-item index="1" @click="writeLetter">
             <i class="el-icon-menu"></i>
-            <span >写信</span>
+            <span ><el-icon><EditPen /></el-icon>写信</span>
           </el-menu-item>
           <el-menu-item index="2" @click="receiveLetter">
             <i class="el-icon-setting"></i>
-            <span >收信</span>
+            <span ><el-icon><Message /></el-icon>收信</span>
           </el-menu-item>
-        </el-menu>           
+        </el-menu>
             </el-aside>
           <!-- 展示区域 -->
           <el-main>
 
           <!-- welcome的默认显示位置 -->
-            <div class="welcome-div" v-if="isWelcome">
-            <img src="img/welcome.png" alt="Welcome">
+          <div class="welcome-div" v-if="isWelcome">
+            <img src="/img/welcome.png" alt="Welcome">
             <p>请点击左侧按钮，亲</p>
           </div>
-          
+
           <!-- 写信与收信按钮的实现 -->
-            <router-view v-if="!isWelcome"></router-view>
-              
+            <router-view  v-if="!isWelcome"></router-view>
+
           </el-main>
       </el-container>
   </el-container>
@@ -68,32 +63,39 @@
 
 <script>
 import emitter from '../event'
+
 export default {
+  name:"Home",
+
   data(){
     return {
       isWelcome:true
-      
+
     }
-    
+
   },
   methods:{
     back(a){
       console.log("回到默认界面",a)
       this.isWelcome=true
+      console.log(this.isWelcome)
     },
     writeLetter(){
-      this.$router.push("/Writing")
+      this.$router.push("/home/Writing")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
     receiveLetter(){
-      this.$router.push("/Receiving")
+      this.$router.push("/home/Receiving")
       this.isWelcome=false
       emitter.on('back',this.back)
     },
       logout(){
-          
-      }
+
+      },
+      want_set(){
+        this.$router.push("/set");
+      },
   }
 };
 </script>
@@ -107,13 +109,14 @@ export default {
 }
 .el-header{
      background-color:rgb(119, 200, 186);
-     display: flex; 
+     display: flex;
      justify-content: space-between;
      padding-left: 30px;
      align-items: center;
      color: #fff;
      font-size: 40px;
  }
+
   .el-aside{
      background-color: #3a3f4f;
  }
