@@ -1,8 +1,6 @@
 <template>
   <div id="app">
-    <Home></Home>
-    <Receiving></Receiving>
-    <email></email>
+  <login></login>
   </div>
 </template>
 <script>
