@@ -9,11 +9,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 public class TinyMailApplicationTest {
 
-    @Autowired
-    UserauthService userauthService;
 
     @Test
     public void context() {
-        System.out.println(userauthService.register(new Userauth("ch", "asd", "123")).getMsg());
+
     }
+
+
+
 }

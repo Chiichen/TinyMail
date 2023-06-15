@@ -1,5 +1,7 @@
 package edu.scut.tinymail.utils.MIME;
 
+import lombok.Builder;
+import lombok.Data;
 import org.testng.annotations.Test;
 
 import java.io.*;
@@ -10,7 +12,8 @@ import java.nio.file.Paths;
 import java.util.Base64;
 
 
-
+@Data
+@Builder
 public class MIMETest {
     @Test
     public void test() throws IOException {
@@ -87,11 +90,11 @@ public class MIMETest {
             // 发送附件
             writer.println("--boundary");
             writer.println("Content-Type: application/octet-stream");
-            writer.println("Content-Disposition: attachment; filename=\"test.txt\"");
+            writer.println("Content-Disposition: attachment; filename=\"63777876648330.png\"");
             writer.println();
 
             // 读取附件内容并进行Base64编码后发送
-            Path attachmentPath = Paths.get("C:\\Users\\ASUS\\Desktop\\test.txt");
+            Path attachmentPath = Paths.get("C:\\Users\\ASUS\\Pictures\\63777876648330.png");
             byte[] attachmentBytes = Files.readAllBytes(attachmentPath);
             //String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
             writer.println(new String(attachmentBytes));
@@ -132,4 +135,45 @@ public class MIMETest {
         //assertEquals(mimeType, "image/png");
         return mimeType;
     }
+
+//
+//
+//    public MIMETest Initialize(string ,string,string,string){
+//
+//    }
+//
+//    public MIMETest sendinfo(string ,string){
+//
+//    }
+//
+//    public MIMETest sendmail(string)
+//    {
+//
+//    }
+//
+//    public MIMETest sendattached(bytep[],string type)
+//    {
+//
+//    }
+//
+//    public void test()
+//    {
+//        MIMETest mimeTest = new MIMETest();
+//        mimeTest.Initialize()
+//                .sendinfo()
+//                .sendmail()
+//                .sendattached()
+//                .sendmail()
+//                .sendattached()
+//                .end;
+//                )
+//    }
+//
+//
+//
+//
+//    public
+
+
+
 }
