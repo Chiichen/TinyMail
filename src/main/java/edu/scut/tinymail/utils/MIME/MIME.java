@@ -86,6 +86,7 @@ public class MIME {
         // 读取服务器响应
         System.out.println(reader.readLine());
 
+
         // 发送SMTP命令
         sendCommand(writer, "HELO " + DOMAIN_NAME);
         System.out.println(reader.readLine());
@@ -288,6 +289,25 @@ public class MIME {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
+    }
+
+
+    public MIME initialize() {
+        return this;
+    }
+
+    public MIME seninfo() {
+        return this;
+    }
+
+    public MIME sendmail() {
+        return this;
+    }
+
+    public MIME sendattachment() {
+        return this;
     }
 
     private static void sendCommand(PrintWriter writer, String command) {

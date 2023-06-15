@@ -53,6 +53,8 @@ public class MailController {
         return new ResponseResult<>(200, "success", mail);
     }
 
+    @Operation(summary = "获取邮件")
+    @PostMapping("/api/getmail")
     public ResponseResult<?> gerMails(String username, String imapserver) {
 
         return mailService.getMails(username, imapserver);

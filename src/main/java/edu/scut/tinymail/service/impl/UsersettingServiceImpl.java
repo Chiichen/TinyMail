@@ -40,6 +40,7 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
                 //Todo 检验用户邮箱配置是否可用
                 usersettingMapper.insert(usersetting);
 
+
                 return new ResponseResult<>(200, "成功添加用户邮箱配置");
             }
 

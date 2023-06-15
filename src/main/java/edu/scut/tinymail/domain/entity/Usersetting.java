@@ -2,9 +2,13 @@ package edu.scut.tinymail.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import jakarta.annotation.Nullable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -53,6 +57,18 @@ public class Usersetting {
                 && ((Usersetting) object).getServerusername().equals(serverusername)
                 && ((Usersetting) object).getServerpassword().equals(serverpassword)
                 && ((Usersetting) object).getType().equals(type);
+    }
+
+    @Nullable
+    public String getDomain() {
+        String regex = "smtp|imap|mail(.*)$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(this.getServername());
+        if (matcher.find()) {
+            return matcher.group(1);
+        } else {
+            return null;
+        }
     }
 }
 
