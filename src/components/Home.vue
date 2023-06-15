@@ -18,7 +18,7 @@
         <el-dropdown-item @click="want_set">
             <el-icon><CirclePlusFilled /></el-icon>添加邮箱
         </el-dropdown-item>
-        
+
 
       </el-dropdown-menu>
     </template>
@@ -91,7 +91,7 @@ export default {
       emitter.on('back',this.back)
     },
       logout(){
-
+        this.$router.push("/login");
       },
       want_set(){
         this.$router.push("/set");
@@ -108,6 +108,7 @@ export default {
   height: 100%;
 }
 .el-header{
+      font-family: "宋体";
      background-color:rgb(119, 200, 186);
      display: flex;
      justify-content: space-between;
