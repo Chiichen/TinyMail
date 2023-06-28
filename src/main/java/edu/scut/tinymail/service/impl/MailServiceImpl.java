@@ -19,21 +19,18 @@ public class MailServiceImpl implements MailService {
     UsersettingService usersettingService;
 
     @Override
-    public ResponseResult<?> send(String username, String smtpserver, Mail mail) throws IOException {
-        if (usersettingService.getSetting(username, smtpserver) == null)
-            return new ResponseResult<>(403, "用户没有配置该邮件服务器");
+    public ResponseResult<?> send(String serverusername, Mail mail) throws IOException {
+
+        if (usersettingService.getSmtpSetting(serverusername).getCode() != 200)
+            return usersettingService.getSmtpSetting(serverusername);
         else {
-            if (usersettingService.getSetting(username, smtpserver).getType() != 0)
-                return new ResponseResult<>(403, "该服务器不是smtp服务器");
-            else {
-                Usersetting setting = usersettingService.getSetting(username, smtpserver);
-                MIME mime = new MIME();
-                mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getUsername(), setting.getServerpassword())
-                        .sendInfo(mail.getFromAddress(), mail.getToAddress())
-                        .sendDataStart(mail.getFromAddress(), mail.getToAddress(), mail.getSubject())
-                        .sendContent(mail.getContent())
-                        .sendDataEnd();
-            }
+            Usersetting setting = usersettingService.getSmtpSetting(serverusername).getData();
+            MIME mime = new MIME();
+            mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getServerusername(), setting.getServerpassword())
+                    .sendInfo(mail.getFromAddress(), mail.getToAddress())
+                    .sendDataStart(mail.getFromAddress(), mail.getToAddress(), mail.getSubject())
+                    .sendContent(mail.getContent())
+                    .sendDataEnd();
         }
 
 
@@ -46,44 +43,39 @@ public class MailServiceImpl implements MailService {
      * @return 根据结果返回result
      */
     @Override
-    public ResponseResult<?> attachedSend(String username, String smtpserver, Mail mail, MultipartFile[] files) throws IOException {
-        if (usersettingService.getSetting(username, smtpserver) == null)
-            return new ResponseResult<>(403, "用户没有配置该邮件服务器");
+    public ResponseResult<?> attachedSend(String serverusername, Mail mail, MultipartFile[] files) throws IOException {
+        if (usersettingService.getSmtpSetting(serverusername).getCode() != 200)
+            return usersettingService.getSmtpSetting(serverusername);
         else {
-            if (usersettingService.getSetting(username, smtpserver).getType() != 0)
-                return new ResponseResult<>(403, "该服务器不是smtp服务器");
-            else {
-                Usersetting setting = usersettingService.getSetting(username, smtpserver);
-                MIME mime = new MIME();
-                mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getUsername(), setting.getServerpassword())
-                        .sendInfo(mail.getFromAddress(), mail.getToAddress())
-                        .sendDataStart(mail.getFromAddress(), mail.getToAddress(), mail.getSubject())
-                        .sendContent(mail.getContent());
-                for (MultipartFile file : files) {
-                    mime.sendAttachment(file.getOriginalFilename(), file.getBytes());
-                }
-                mime.sendDataEnd();
-                return new ResponseResult<>(200, "邮件成功发送");
+            Usersetting setting = usersettingService.getSmtpSetting(serverusername).getData();
+            MIME mime = new MIME();
+            mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getServerusername(), setting.getServerpassword())
+                    .sendInfo(mail.getFromAddress(), mail.getToAddress())
+                    .sendDataStart(mail.getFromAddress(), mail.getToAddress(), mail.getSubject())
+                    .sendContent(mail.getContent());
+            for (MultipartFile file : files) {
+                mime.sendAttachment(file.getOriginalFilename(), file.getBytes());
+                //Todo 某些情况下中文文件名会乱码，待修复
             }
-
-
+            mime.sendDataEnd();
+            return new ResponseResult<>(200, "邮件成功发送");
         }
+
+
     }
 
     @Override
-    public ResponseResult<?> getMails(String username, String smtpserver) {
+    public ResponseResult<?> getMails(String serverusername) {
 
-        if (usersettingService.getSetting(username, smtpserver) == null)
-            return new ResponseResult<>(403, "用户没有配置该邮件服务器");
+
+        if (usersettingService.getImapSetting(serverusername).getCode() != 200)
+            return usersettingService.getImapSetting(serverusername);
         else {
-            if (usersettingService.getSetting(username, smtpserver).getType() != 1)
-                return new ResponseResult<>(403, "该服务器不是imap服务器");
-            else {
-                Usersetting setting = usersettingService.getSetting(username, smtpserver);
-                //Todo 调用utils进行邮件接收
-            }
-
-            return new ResponseResult<>(200, "ok");
+            Usersetting setting = usersettingService.getImapSetting(serverusername).getData();
+            //Todo 调用utils进行邮件接收
         }
+
+        return new ResponseResult<>(200, "ok");
     }
+
 }

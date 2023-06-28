@@ -121,8 +121,9 @@ public class SecurityConfig {
         //配置自定义登陆流程后需要关闭 否则可以使用原有登陆方式
         //登出
         http.logout().logoutUrl("/api/user/logout").logoutSuccessHandler(authenticationHandler);
-        //禁用 csrf
+        //禁用 csrf和允许跨域
         http.csrf().disable();
+        http.cors().disable();
         //csrf验证 存储到Cookie中
 //        http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
 //                .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler())

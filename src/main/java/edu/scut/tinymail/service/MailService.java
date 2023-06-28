@@ -9,10 +9,10 @@ import java.io.IOException;
 
 public interface MailService {
 
-    ResponseResult<?> send(String username, String smtpserver, Mail mail) throws IOException;
+    ResponseResult<?> send(String serverusername, Mail mail) throws IOException;
 
 
-    ResponseResult<?> attachedSend(String username, String smtpserver, Mail mail, MultipartFile[] files) throws IOException;
+    ResponseResult<?> attachedSend(String serverusername, Mail mail, MultipartFile[] files) throws IOException;
 
-    ResponseResult<?> getMails(String username, String smtpserver);
+    ResponseResult<?> getMails(String serverusername);
 }

@@ -1,5 +1,6 @@
 package edu.scut.tinymail.domain.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import jakarta.annotation.Nullable;
@@ -40,6 +41,10 @@ public class Usersetting {
      */
     private Integer type;
 
+    //Todo 添加一个servernickname来保存用户对这个服务器的备注，而且不能用服务器域名来唯一确定一个服务器了，要用服务器的serverusername和server来唯一标识(因为考虑到用户可能有多个QQ邮箱的情况)
+
+    @TableField(exist = false)
+    public static final int SMTP = 0, IMAP = 1, ELSE = 2;
 
     public Usersetting(String username, String servername, String serverusername, String serverpassword, Integer type) {
         this.username = username;

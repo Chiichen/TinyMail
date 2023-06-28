@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetailsPasswordService;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +26,12 @@ public class UserController {
     @Autowired
     UsersettingService usersettingService;
 
+    @Autowired
+    UserDetailsService userDetailsService;
+
+    @Autowired
+    UserDetailsPasswordService userDetailsPasswordService;
+
     @Operation(summary = "注册接口")
     @PostMapping("/api/user/register")
     public ResponseResult<?> register(
@@ -32,6 +40,17 @@ public class UserController {
         if (userauth.getVc().isBlank()) return new ResponseResult<>(401, "请输入验证码");
 
         else return userauthService.register(userauth, request);
+    }
+
+    @Operation(summary = "修改用户密码")
+    @PostMapping("/api/user/updatePassword")
+    public ResponseResult<?> updatePassword(String username, String newpassword) {
+        return new ResponseResult<>(200, "成功修改密码",
+                userDetailsPasswordService
+                        .updatePassword(
+                                userDetailsService
+                                        .loadUserByUsername(username), newpassword)
+        );
     }
 
     @Operation(summary = "给指定用户添加配置信息")
@@ -59,9 +78,9 @@ public class UserController {
 
     @Operation(summary = "删除某个邮箱配置")
     @PostMapping("api/user/deletesetting")
-    public ResponseResult<?> deleteUserSetting(String username, String servername) {
-        if (userauthService.getByUsername(username) == null) return new ResponseResult<>(403, "用户不存在");
-        else return usersettingService.deleteSetting(username, servername);
+    public ResponseResult<?> deleteUserSetting(String serverusername) {
+        return usersettingService.deleteSetting(serverusername);
     }
+
 
 }

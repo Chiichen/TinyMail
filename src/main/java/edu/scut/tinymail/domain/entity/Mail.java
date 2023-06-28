@@ -2,10 +2,12 @@ package edu.scut.tinymail.domain.entity;
 
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Schema(description = "邮件封装类")
 @Data
+@AllArgsConstructor
 public class Mail {
     @Schema(description = "邮件标题")
     String subject;

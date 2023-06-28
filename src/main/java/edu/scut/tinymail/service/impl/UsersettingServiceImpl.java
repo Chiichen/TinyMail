@@ -79,31 +79,64 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
 
 
     /**
-     * @param username
-     * @param server
-     * @return
+     * @param serverusername
+     * @return Result
+     * @Description 只要删除就把所有邮箱都删了，包括IMAP和SMTP
      */
     @Override
-    public ResponseResult<?> deleteSetting(String username, String server) {
-        if (usersettingMapper.getByName(username) == null) return new ResponseResult<>(403, "该用户不存在配置");
+    public ResponseResult<?> deleteSetting(String serverusername) {
+        QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("serverusername", serverusername);
+        if (usersettingMapper.selectOne(queryWrapper) == null)
+            return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else {
-            if (getSetting(username, server) == null) return new ResponseResult<>(403, "该用户不存在这个服务器配置");
-            else {
-                QueryWrapper<Usersetting> deleteWrapper = new QueryWrapper<>();
-                deleteWrapper.and(wrapper -> wrapper.eq("username", username).eq("servername", server));
-                usersettingMapper.delete(deleteWrapper);
-                return new ResponseResult<>(200, "ok");
-            }
+            usersettingMapper.delete(queryWrapper);
+            return new ResponseResult<>(200, "ok");
         }
-
     }
 
 
     @Override
-    public Usersetting getSetting(String username, String server) {
+    public ResponseResult<List<Usersetting>> getSetting(String serverusername) {
         QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
-        queryWrapper.and(wrapper -> wrapper.eq("username", username).eq("servername", server));
-        return usersettingMapper.selectOne(queryWrapper);
+        if (usersettingMapper.selectList(queryWrapper).isEmpty())
+            return new ResponseResult<>(403, "该用户不存在这个服务器配置");
+        else
+            return new ResponseResult<>(200, "ok", usersettingMapper.selectList(queryWrapper));
+    }
+
+
+    /**
+     * @param serverusername
+     * @return
+     */
+    @Override
+    public ResponseResult<Usersetting> getSmtpSetting(String serverusername) {
+        if (getSetting(serverusername).getCode() != 200) return new ResponseResult<>(403, "该用户不存在这个服务器配置");
+        else {
+            for (Usersetting setting : getSetting(serverusername).getData()
+            ) {
+                if (setting.getType() == Usersetting.SMTP) return new ResponseResult<>(200, "ok", setting);
+            }
+        }
+
+        return new ResponseResult<>(403, "该用户未配置SMTP服务器");
+    }
+
+    /**
+     * @param serverusername
+     * @return
+     */
+    @Override
+    public ResponseResult<Usersetting> getImapSetting(String serverusername) {
+        if (getSetting(serverusername).getCode() != 200) return new ResponseResult<>(403, "该用户不存在这个服务器配置");
+        else {
+            for (Usersetting setting : getSetting(serverusername).getData()
+            ) {
+                if (setting.getType() == Usersetting.IMAP) return new ResponseResult<>(200, "ok", setting);
+            }
+        }
+        return new ResponseResult<>(403, "该用户未配置IMAP服务器");
     }
 
 }

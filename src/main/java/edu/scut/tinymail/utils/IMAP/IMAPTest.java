@@ -1,11 +1,7 @@
 package edu.scut.tinymail.utils.IMAP;
 
-import io.swagger.models.auth.In;
 import org.junit.jupiter.api.Test;
 
-
-import java.io.*;
-import java.net.Socket;
 import java.util.Base64;
 
 public class IMAPTest {
@@ -18,8 +14,9 @@ public class IMAPTest {
     }
 
     public void IMAP(){
-        int[] index={4,5,53};
-            String serverPort="143";
+        int[] index = {4, 5, 53};
+        int[] index1 = {1};
+        String serverPort = "143";
             String serverName="imap.qq.com";
             String username="1405522135@qq.com";
             String password="fysbuutvccsbgdce";
@@ -33,7 +30,7 @@ public class IMAPTest {
                 imap.Initialize(serverName,serverPort);
 
 
-                imap.login(username,password);
+                imap.login(username, password);
 
 
                 imap.list();
@@ -43,11 +40,12 @@ public class IMAPTest {
 
 
 //                imap.fetch(53);
-//
-//                imap.getBody();
-                imap.fetchs(index);
+///               imap.getBody();
+                imap.fetch(1);
 
+                imap.getHtml_body_list().get(6);
 
+                //System.out.println(imap.get_Multipart_Plain(imap.getBoundary()));
 
 
 //                IMAP.fetch(out,4);
