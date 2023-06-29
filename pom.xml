@@ -14,6 +14,7 @@
         <spring-boot.version>3.0.2</spring-boot.version>
     </properties>
     <dependencies>
+        <!-- 集成redis依赖  -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>

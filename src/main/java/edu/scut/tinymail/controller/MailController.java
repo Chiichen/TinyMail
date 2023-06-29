@@ -48,8 +48,6 @@ public class MailController {
             Mail mail,
             @Parameter(description = "需要发送的附件")
             MultipartFile[] files) throws IOException {
-        System.out.println(files[0].getOriginalFilename());
-        //send抛出异常后，由handler来接管，后面的return就不会执行。
         return mailService.attachedSend(username, serverusername, mail, files);
     }
 

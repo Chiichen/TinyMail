@@ -5,40 +5,23 @@ import java.io.Serial;
 public class MailException {
 
 
-    public static class BadExecution extends BaseException {
-        @Serial
-        private static final long serialVersionUID = 3555714415375055302L;
+    public static class SMTPException extends BaseException {
 
-        public BadExecution(String msg) {
+        @Serial
+        private static final long serialVersionUID = -6505082281969920053L;
+
+        public SMTPException(String msg) {
             super(msg);
         }
     }
 
-    public static class NoData extends BaseException {
+    public static class IMAPException extends BaseException {
+
 
         @Serial
-        private static final long serialVersionUID = 2148191942142494580L;
+        private static final long serialVersionUID = -838203214138370189L;
 
-        public NoData(String msg) {
-            super(msg);
-        }
-    }
-
-    public static class MoreData extends BaseException {
-
-        @Serial
-        private static final long serialVersionUID = -5851418017510236080L;
-
-        public MoreData(String msg) {
-            super(msg);
-        }
-    }
-
-    public static class InvalidParam extends BaseException {
-        @Serial
-        private static final long serialVersionUID = 4235225697094262603L;
-
-        public InvalidParam(String msg) {
+        public IMAPException(String msg) {
             super(msg);
         }
     }

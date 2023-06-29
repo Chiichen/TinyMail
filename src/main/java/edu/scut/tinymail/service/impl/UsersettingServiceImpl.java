@@ -104,7 +104,7 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
         QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
         queryWrapper.and(wrapper -> wrapper
                 .eq("username", username)
-                .eq("serverusername", username));
+                .eq("serverusername", serverusername));
         if (usersettingMapper.selectList(queryWrapper).isEmpty())
             return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else
