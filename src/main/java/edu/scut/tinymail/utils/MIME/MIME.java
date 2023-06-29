@@ -1,5 +1,6 @@
 package edu.scut.tinymail.utils.MIME;
 
+import edu.scut.tinymail.exception.MailException;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -14,12 +15,12 @@ import java.util.Base64;
 public class MIME {
 
     @Test
-    public void test() throws IOException {
+    public void test() throws IOException, MailException.SMTPException {
 
         MIME mime = new MIME();
-        mime.Initialize("smtp.qq.com",25,"qq.com","2530221402@qq.com","aaievxjsnpavebdi")
-                .sendInfo("2530221402@qq.com","13712922800@163.com")//2900807385@qq.com
-                .sendDataStart("2530221402@qq.com","13712922800@163.com","Test")
+        mime.Initialize("smtp.qq.com", 25, "qq.com", "2530221402@qq.com", "aaievxjsnpavebdi")
+                .sendInfo("2530221402@qq.com", "13712922800@163.com")//2900807385@qq.com
+                .sendDataStart("2530221402@qq.com", "13712922800@163.com", "Test")
                 .sendContent("""
                         先帝创业未半而中道崩殂，今天下三分，益州疲弊，此诚危急存亡之秋也。然侍卫之臣不懈于内，忠志之士忘身于外者，盖追先帝之殊遇，欲报之于陛下也。诚宜开张圣听，以光先帝遗德，恢弘志士之气，不宜妄自菲薄，引喻失义，以塞忠谏之路也。
                         宫中府中，俱为一体，陟罚臧否，不宜异同。若有作奸犯科及为忠善者，宜付有司论其刑赏，以昭陛下平明之理，不宜偏私，使内外异法也。
@@ -70,7 +71,7 @@ public class MIME {
     String MIME_TYPE = "";
 
     //MIME初始化接口
-    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException {
+    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException, MailException.SMTPException {
         //参数初始化
         setSMTP_SERVER(server);
         setSMTP_PORT(port);
@@ -83,14 +84,14 @@ public class MIME {
         setReader(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         setWriter(new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
 
-        // 读取服务器响应
         System.out.println(reader.readLine());
 
 
         // 发送SMTP命令
         sendCommand(writer, "HELO " + DOMAIN_NAME);
         System.out.println(reader.readLine());
-
+        System.out.println(reader.readLine());
+        System.out.println(reader.readLine());
         // 发送身份验证命令
         sendCommand(writer, "AUTH LOGIN");
         System.out.println(reader.readLine());
@@ -102,13 +103,16 @@ public class MIME {
         // 发送密码
         sendCommand(writer, base64Encode(this.PASSWORD));
         System.out.println(reader.readLine());
+        // 读取服务器响应
+
         return this;
     }
 
-    public MIME sendInfo(String sender, String receiver) throws IOException {
+    public MIME sendInfo(String sender, String receiver) throws IOException, MailException.SMTPException {
         // 发送发件人信息
         sendCommand(writer, "MAIL FROM: <" + sender + ">");
-        System.out.println(reader.readLine());
+        String responseString = reader.readLine();
+        if (!responseString.contains("OK")) throw new MailException.SMTPException("发件人地址有误，请检查邮箱有效性");
 
         // 发送收件人信息
         sendCommand(writer, "RCPT TO: <" + receiver + ">");

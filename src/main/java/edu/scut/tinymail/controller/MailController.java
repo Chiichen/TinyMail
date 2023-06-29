@@ -2,6 +2,7 @@ package edu.scut.tinymail.controller;
 
 import edu.scut.tinymail.domain.ResponseResult;
 import edu.scut.tinymail.domain.entity.Mail;
+import edu.scut.tinymail.exception.MailException;
 import edu.scut.tinymail.service.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -31,9 +32,8 @@ public class MailController {
             @Parameter(description = "用来发送邮件的smtp服务器")
             String serverusername,
             @Parameter(description = "需要发送的邮件信息")
-            Mail mail) throws IOException {
-        mailService.send(username, serverusername, mail);//send抛出异常后，由handler来接管，后面的return就不会执行。
-        return new ResponseResult<>(200, "success", mail);
+            Mail mail) throws IOException, MailException.SMTPException {
+        return mailService.send(username, serverusername, mail);//send抛出异常后，由handler来接管，后面的return就不会执行。
     }
 
     @Operation(summary = "邮件发送接口(有附件)")
@@ -47,7 +47,7 @@ public class MailController {
             @Parameter(description = "需要发送的邮件信息")
             Mail mail,
             @Parameter(description = "需要发送的附件")
-            MultipartFile[] files) throws IOException {
+            MultipartFile[] files) throws IOException, MailException.SMTPException {
         return mailService.attachedSend(username, serverusername, mail, files);
     }
 

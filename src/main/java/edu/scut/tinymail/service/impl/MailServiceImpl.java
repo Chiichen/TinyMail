@@ -3,6 +3,7 @@ package edu.scut.tinymail.service.impl;
 import edu.scut.tinymail.domain.ResponseResult;
 import edu.scut.tinymail.domain.entity.Mail;
 import edu.scut.tinymail.domain.entity.Usersetting;
+import edu.scut.tinymail.exception.MailException;
 import edu.scut.tinymail.service.MailService;
 import edu.scut.tinymail.service.UsersettingService;
 import edu.scut.tinymail.utils.MIME.MIME;
@@ -19,7 +20,7 @@ public class MailServiceImpl implements MailService {
     UsersettingService usersettingService;
 
     @Override
-    public ResponseResult<?> send(String username, String serverusername, Mail mail) throws IOException {
+    public ResponseResult<?> send(String username, String serverusername, Mail mail) throws IOException, MailException.SMTPException {
 
         if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200)
             return usersettingService.getSmtpSetting(username, serverusername);
@@ -43,7 +44,7 @@ public class MailServiceImpl implements MailService {
      * @return 根据结果返回result
      */
     @Override
-    public ResponseResult<?> attachedSend(String username, String serverusername, Mail mail, MultipartFile[] files) throws IOException {
+    public ResponseResult<?> attachedSend(String username, String serverusername, Mail mail, MultipartFile[] files) throws IOException, MailException.SMTPException {
         if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200)
             return usersettingService.getSmtpSetting(username, serverusername);
         else {
