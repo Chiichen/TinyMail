@@ -31,21 +31,23 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
     @Override
     public ResponseResult<?> addUserSetting(Usersetting usersetting) {
         if (userauthMapper.selectById(usersetting.getUsername()) == null)
-            return new ResponseResult<>(403, "该用户不存在");
+            return new ResponseResult<>(403, "该用户不存在，请先注册");
             //先查询用户是不是已经有这条记录了
         else {
-            if (getByName(usersetting.getUsername()).getData().contains(usersetting))
+            QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
+            queryWrapper.and(
+                    wrapper -> wrapper
+                            .eq("username", usersetting.getUsername())
+                            .eq("serverusername", usersetting.getServerusername()));
+
+            if (!usersettingMapper.selectList(queryWrapper).isEmpty())
                 return new ResponseResult<>(403, "这个邮箱已经添加过了");
             else {
                 //Todo 检验用户邮箱配置是否可用
                 usersettingMapper.insert(usersetting);
-
-
                 return new ResponseResult<>(200, "成功添加用户邮箱配置");
             }
-
         }
-
     }
 
     /**
@@ -56,20 +58,19 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
     public ResponseResult<List<Usersetting>> getByName(String username) {
         if (userauthMapper.selectById(username) == null)
             return new ResponseResult<>(403, "该用户不存在");
-        return new ResponseResult<List<Usersetting>>(200, "ok", usersettingMapper.getByName(username));
-
+        return new ResponseResult<>(200, "ok", usersettingMapper.getByName(username));
     }
 
     @Override
     public ResponseResult<?> setUserSetting(Usersetting usersetting) {
         if (userauthMapper.selectById(usersetting.getUsername()) == null)
             return new ResponseResult<>(403, "该用户不存在");
-        if (usersettingMapper.getByName(usersetting.getUsername()).contains(usersetting))
-            return new ResponseResult<>(403, "这个配置已经存在了");
-
         else {
             UpdateWrapper<Usersetting> usersettingUpdateWrapper = new UpdateWrapper<>();
-            usersettingUpdateWrapper.and(wrapper -> wrapper.eq("username", usersetting.getUsername()).eq("servername", usersetting.getServername()));
+            usersettingUpdateWrapper.and(wrapper -> wrapper
+                    .eq("username", usersetting.getUsername())
+                    .eq("servername", usersetting.getServername())
+                    .eq("serverusername", usersetting.getServerusername()));
             usersettingMapper.update(usersetting, usersettingUpdateWrapper);
             return new ResponseResult<>(200, "已成功更新" + usersetting.getUsername() + "的服务器配置");
         }
@@ -84,10 +85,12 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
      * @Description 只要删除就把所有邮箱都删了，包括IMAP和SMTP
      */
     @Override
-    public ResponseResult<?> deleteSetting(String serverusername) {
+    public ResponseResult<?> deleteSetting(String username, String serverusername) {
         QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("serverusername", serverusername);
-        if (usersettingMapper.selectOne(queryWrapper) == null)
+        queryWrapper.and(wrapper -> wrapper
+                .eq("username", username)
+                .eq("serverusername", username));
+        if (usersettingMapper.selectList(queryWrapper).isEmpty())
             return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else {
             usersettingMapper.delete(queryWrapper);
@@ -97,8 +100,11 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
 
 
     @Override
-    public ResponseResult<List<Usersetting>> getSetting(String serverusername) {
+    public ResponseResult<List<Usersetting>> getSetting(String username, String serverusername) {
         QueryWrapper<Usersetting> queryWrapper = new QueryWrapper<>();
+        queryWrapper.and(wrapper -> wrapper
+                .eq("username", username)
+                .eq("serverusername", username));
         if (usersettingMapper.selectList(queryWrapper).isEmpty())
             return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else
@@ -111,10 +117,11 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
      * @return
      */
     @Override
-    public ResponseResult<Usersetting> getSmtpSetting(String serverusername) {
-        if (getSetting(serverusername).getCode() != 200) return new ResponseResult<>(403, "该用户不存在这个服务器配置");
+    public ResponseResult<Usersetting> getSmtpSetting(String username, String serverusername) {
+        if (getSetting(username, serverusername).getCode() != 200)
+            return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else {
-            for (Usersetting setting : getSetting(serverusername).getData()
+            for (Usersetting setting : getSetting(username, serverusername).getData()
             ) {
                 if (setting.getType() == Usersetting.SMTP) return new ResponseResult<>(200, "ok", setting);
             }
@@ -128,10 +135,11 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
      * @return
      */
     @Override
-    public ResponseResult<Usersetting> getImapSetting(String serverusername) {
-        if (getSetting(serverusername).getCode() != 200) return new ResponseResult<>(403, "该用户不存在这个服务器配置");
+    public ResponseResult<Usersetting> getImapSetting(String username, String serverusername) {
+        if (getSetting(username, serverusername).getCode() != 200)
+            return new ResponseResult<>(403, "该用户不存在这个服务器配置");
         else {
-            for (Usersetting setting : getSetting(serverusername).getData()
+            for (Usersetting setting : getSetting(username, serverusername).getData()
             ) {
                 if (setting.getType() == Usersetting.IMAP) return new ResponseResult<>(200, "ok", setting);
             }

@@ -19,12 +19,12 @@ public class MailServiceImpl implements MailService {
     UsersettingService usersettingService;
 
     @Override
-    public ResponseResult<?> send(String serverusername, Mail mail) throws IOException {
+    public ResponseResult<?> send(String username, String serverusername, Mail mail) throws IOException {
 
-        if (usersettingService.getSmtpSetting(serverusername).getCode() != 200)
-            return usersettingService.getSmtpSetting(serverusername);
+        if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200)
+            return usersettingService.getSmtpSetting(username, serverusername);
         else {
-            Usersetting setting = usersettingService.getSmtpSetting(serverusername).getData();
+            Usersetting setting = usersettingService.getSmtpSetting(username, serverusername).getData();
             MIME mime = new MIME();
             mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getServerusername(), setting.getServerpassword())
                     .sendInfo(mail.getFromAddress(), mail.getToAddress())
@@ -43,11 +43,12 @@ public class MailServiceImpl implements MailService {
      * @return 根据结果返回result
      */
     @Override
-    public ResponseResult<?> attachedSend(String serverusername, Mail mail, MultipartFile[] files) throws IOException {
-        if (usersettingService.getSmtpSetting(serverusername).getCode() != 200)
-            return usersettingService.getSmtpSetting(serverusername);
+    public ResponseResult<?> attachedSend(String username, String serverusername, Mail mail, MultipartFile[] files) throws IOException {
+        if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200)
+            return usersettingService.getSmtpSetting(username, serverusername);
         else {
-            Usersetting setting = usersettingService.getSmtpSetting(serverusername).getData();
+            if (files == null) return send(username, serverusername, mail);
+            Usersetting setting = usersettingService.getSmtpSetting(username, serverusername).getData();
             MIME mime = new MIME();
             mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getServerusername(), setting.getServerpassword())
                     .sendInfo(mail.getFromAddress(), mail.getToAddress())
@@ -65,13 +66,13 @@ public class MailServiceImpl implements MailService {
     }
 
     @Override
-    public ResponseResult<?> getMails(String serverusername) {
+    public ResponseResult<?> getMails(String username, String serverusername) {
 
 
-        if (usersettingService.getImapSetting(serverusername).getCode() != 200)
-            return usersettingService.getImapSetting(serverusername);
+        if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
+            return usersettingService.getImapSetting(username, serverusername);
         else {
-            Usersetting setting = usersettingService.getImapSetting(serverusername).getData();
+            Usersetting setting = usersettingService.getImapSetting(username, serverusername).getData();
             //Todo 调用utils进行邮件接收
         }
 

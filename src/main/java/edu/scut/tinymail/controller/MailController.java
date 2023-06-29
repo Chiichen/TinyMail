@@ -26,12 +26,13 @@ public class MailController {
     @PostMapping("/api/mail/send")
     //@PreAuthorize("hasAuthority('user')")
     public ResponseResult<?> sendMail(
-
+            @Parameter(description = "发件的用户")
+            String username,
             @Parameter(description = "用来发送邮件的smtp服务器")
             String serverusername,
             @Parameter(description = "需要发送的邮件信息")
             Mail mail) throws IOException {
-        mailService.send(serverusername, mail);//send抛出异常后，由handler来接管，后面的return就不会执行。
+        mailService.send(username, serverusername, mail);//send抛出异常后，由handler来接管，后面的return就不会执行。
         return new ResponseResult<>(200, "success", mail);
     }
 
@@ -39,22 +40,24 @@ public class MailController {
     @PostMapping("/api/mail/attachedsend")
     //@PreAuthorize("hasAuthority('user')")
     public ResponseResult<?> sendAttachedMail(
+            @Parameter(description = "发件的用户")
+            String username,
             @Parameter(description = "用来发送邮件的smtp服务器")
-            String serusername,
+            String serverusername,
             @Parameter(description = "需要发送的邮件信息")
             Mail mail,
             @Parameter(description = "需要发送的附件")
             MultipartFile[] files) throws IOException {
         System.out.println(files[0].getOriginalFilename());
-        mailService.attachedSend(serusername, mail, files);//send抛出异常后，由handler来接管，后面的return就不会执行。
-        return new ResponseResult<>(200, "success", mail);
+        //send抛出异常后，由handler来接管，后面的return就不会执行。
+        return mailService.attachedSend(username, serverusername, mail, files);
     }
 
     @Operation(summary = "获取邮件")
     @PostMapping("/api/getmail")
-    public ResponseResult<?> gerMails(String serverusername) {
+    public ResponseResult<?> gerMails(String username, String serverusername) {
 
-        return mailService.getMails(serverusername);
+        return mailService.getMails(username, serverusername);
     }
 
 

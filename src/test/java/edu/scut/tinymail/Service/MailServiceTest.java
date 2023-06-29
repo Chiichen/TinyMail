@@ -17,6 +17,6 @@ public class MailServiceTest {
     @Test
     public void context() throws IOException {
         Mail mail = new Mail("测试", "这是一个测试邮件", "2531693734@qq.com", "2383690608@qq.com");
-        mailService.send("2531693734@qq.com", mail);
+        mailService.send("chi", "2531693734@qq.com", mail);
     }
 }

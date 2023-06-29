@@ -78,8 +78,8 @@ public class UserController {
 
     @Operation(summary = "删除某个邮箱配置")
     @PostMapping("api/user/deletesetting")
-    public ResponseResult<?> deleteUserSetting(String serverusername) {
-        return usersettingService.deleteSetting(serverusername);
+    public ResponseResult<?> deleteUserSetting(String username, String serverusername) {
+        return usersettingService.deleteSetting(username, serverusername);
     }
 
 
