@@ -62,10 +62,12 @@ export default {
 
   methods: {
     layoutReceiving() {
-      emitter.emit('back', "asdasd");
+      emitter.emit('back', true);
     },
     goToEmailDetail(id){
-      this.$router.push(`/email/${id}`);
+      console.log("进入详情页",id)
+      // this.$router.push(`/email/${id}`);
+      emitter.emit('toRouter', `/email/${id}`);
     },
   },
 };

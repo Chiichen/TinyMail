@@ -45,7 +45,7 @@
 
       <div class="login-content">
 
-        
+
 
         <el-form  :model="loginForm" :rules="loginRules" ref="loginForms" label-width="100px">
 
@@ -97,7 +97,7 @@ export default {
       },
       loginRules:{
         userName:[{ required: true, message: "请输入账号", trigger: "blur" },{
-          min: 10,
+          min: 1,
           max: 20,
           message: "账号长度应为10到20位",
           trigger: 'blur'
@@ -119,7 +119,7 @@ export default {
       registerRules:{
         setNickName:[{required:true,message:"请输入所要注册的账号昵称",trigger:"blur"}],
         setUserName:[{required:true,message:"请输入所要注册的账号用户名",trigger:"blur"},{
-          min:10,
+          min:1,
           max:20,
           message:"账号长度应为10到20位",
           trigger:'blur'
@@ -207,9 +207,13 @@ export default {
           url: '/api/api/user/login?username='+this.loginForm.userName+"&password="+this.loginForm.passWord+"&vc="+this.loginForm.code,
         }).then(res=>{
           console.log(res)
+          sessionStorage.setItem("username",this.loginForm.userName)
+          sessionStorage.setItem("token","")
+
 
         }).catch(res=>{
           console.log(res)
+          //todo 提示错误
         })
         this.$router.push("/home")
         this.isLogin=false
@@ -217,20 +221,20 @@ export default {
     },
     registerButton(){
       this.ACKLogin=false;
-      let reqData={
-        username:this.loginForm.userName,
-        nickname:"",
-        password:this.loginForm.passWord,
-        authorities:this.loginForm.code
-      }
-      axios({
-        method: 'post',
-        url: '/api/api/user/register?username='+this.loginForm.userName+"&password="+this.loginForm.passWord+"&vc="+this.loginForm.code,
-      }).then(res=>{
-        console.log(res)
-      }).catch(res=>{
-        console.log(res)
-      })
+      // let reqData={
+      //   username:this.loginForm.userName,
+      //   nickname:"",
+      //   password:this.loginForm.passWord,
+      //   authorities:this.loginForm.code
+      // }
+      // axios({
+      //   method: 'post',
+      //   url: '/api/api/user/register?username='+this.loginForm.userName+"&password="+this.loginForm.passWord+"&vc="+this.loginForm.code,
+      // }).then(res=>{
+      //   console.log(res)
+      // }).catch(res=>{
+      //   console.log(res)
+      // })
 
 
     },
@@ -241,7 +245,33 @@ export default {
 
     },
     overRegister(){
-      this.ACKLogin=true;
+      //注册按钮  注册成功要提示注册成功 并返回登录界面
+      console.log("点击注册确定")
+      // let reqData={
+      //   username:this.loginForm.userName,
+      //   nickname:"",
+      //   password:this.loginForm.passWord,
+      //   authorities:this.loginForm.code
+      // }
+
+      var formData = new FormData();
+      console.log(this.registerForm)
+      formData.append("username",this.registerForm.setUserName)
+      formData.append("nickname",this.registerForm.setNickName)
+      formData.append("password",this.registerForm.setPassWord)
+      formData.append("vc",this.registerForm.REcode)
+      axios({
+        method: 'post',
+        url: '/api/api/user/register',
+        data:formData,
+      }).then(res=>{
+        console.log(res)
+        this.ACKLogin=true;
+      }).catch(res=>{
+        console.log(res)
+        //todo 提示错误
+      })
+
       /* 添加提交的部分 */
     },
   },

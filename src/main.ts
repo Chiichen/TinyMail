@@ -15,6 +15,7 @@ import Set from "./components/Set.vue";
 import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
+import email from "./components/email.vue";
 
 const routes=[
 
@@ -35,13 +36,18 @@ const routes=[
                 path:'Receiving',
                 component: Receiving
             }
+            ,
+            {
+                path:'/email/:id',
+                component:email,
+            }
+
         ]
     },
     {
         path:'/set',
         component:Set,
     }
-
 
 
 ];

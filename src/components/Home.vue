@@ -25,8 +25,8 @@
     </el-dropdown>
 
     <el-button type="primary" @click="logout"><el-icon><Edit /></el-icon>退出</el-button>
-     </div> 
-    
+     </div>
+
     </el-header>
       <!-- 主界面 -->
       <el-container>
@@ -77,21 +77,31 @@ export default {
 
   },
   methods:{
-    back(a){
-      console.log("回到默认界面",a)
-      this.isWelcome=true
+    back(isWelcome){
+      console.log("回到默认界面",isWelcome)
+      this.isWelcome=isWelcome
       console.log(this.isWelcome)
-
+    },
+    toRouter(route){
+      console.log(route)
+      this.$router.push(route)
+      this.isWelcome=false
+      emitter.on('back',this.back)
     },
     writeLetter(){
       this.$router.push("/home/Writing")
       this.isWelcome=false
       emitter.on('back',this.back)
+
     },
     receiveLetter(){
       this.$router.push("/home/Receiving")
       this.isWelcome=false
       emitter.on('back',this.back)
+
+
+      //设置全局事件总线用于路由跳转
+      emitter.on('toRouter',this.toRouter)
     },
       logout(){
         this.$router.push("/login");
@@ -123,7 +133,7 @@ export default {
 
  .headerButton{
   display: flex;
-  
+
  }
 
  .setButton{
