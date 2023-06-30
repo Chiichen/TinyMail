@@ -27,7 +27,7 @@
             <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
           </el-form-item>
 
-          <!-- 在上述账号密码格式都正确的情况下才能确定的功能还没实现 -->
+          
           <el-form-item>
             <el-button type="success" @click="overRegister" >确认</el-button>
           </el-form-item>

@@ -5,6 +5,8 @@
         <div>
         <span>TinyMail</span>
     </div>
+
+    <!-- 设置按钮 -->
     <div class="headerButton">
     <el-dropdown trigger="click">
       <el-button class="setButton"  type="primary" >
@@ -13,10 +15,19 @@
       <template #dropdown>
 
 
-      <el-dropdown-menu slot="dropdown">
+      <el-dropdown-menu >
 
-        <el-dropdown-item @click="want_set">
-            <el-icon><CirclePlusFilled /></el-icon>添加邮箱
+        <el-dropdown-item disabled v-for="item in items" :key="item.id">
+          <div style="text-align:center;background-image: linear-gradient(to right,#94a1aa,#FFFFFF); color:black">
+            <span style="font-size:18px">{{item.name}}</span>
+          <br><span>{{item.email}}</span>
+          </div>
+          
+        </el-dropdown-item>
+
+        <el-dropdown-item @click="want_set" divided style="text-align:center">
+            <el-icon style="font-size:16px;margin-right: 9px;"><CirclePlusFilled /></el-icon>
+            <span style="font-size:16px;">添加邮箱</span>
         </el-dropdown-item>
 
 
@@ -24,6 +35,7 @@
     </template>
     </el-dropdown>
 
+    <!-- 退出按钮 -->
     <el-button type="primary" @click="logout"><el-icon><Edit /></el-icon>退出</el-button>
      </div> 
     
@@ -71,8 +83,9 @@ export default {
 
   data(){
     return {
-      isWelcome:true
-
+      isWelcome:true,
+      items:[{id:1,name:'HUAZI',email:'HUAZI@qq.com'},
+          {id:2,name:'ZIHUA',email:'ZIHUA@163.com'},],
     }
 
   },
@@ -93,12 +106,25 @@ export default {
       this.isWelcome=false
       emitter.on('back',this.back)
     },
+
+    /* 返回登录界面 */
       logout(){
         this.$router.push("/login");
       },
+
+     /*  进入添加邮箱界面 */
       want_set(){
         this.$router.push("/set");
       },
+
+
+      /* 获取已添加邮箱的数据 */
+      getEmail(){
+
+      },
+  },
+  computed:{
+
   }
 };
 </script>

@@ -1,22 +1,22 @@
 <template>
     <div class="setBody">
 
-        <div class="setQQmail" @click="SelectQQmail">
+        <div class="setQQmail" @click="SelectQQmail" v-if="help==0">
             <img src="/img/qqmail_logo.png" alt="QQLogo" class="setQQLogo">
 
         </div>
 
-        <div class="set163mail" @click="Select163mail">
+        <div class="set163mail" @click="Select163mail" v-if="help==0">
             <img src="/img/163mail_logo.png" alt="163Logo" class="set163Logo">
         </div>
 
-        <div class="setGmail" @click="SelectGmail">
+        <div class="setGmail" @click="SelectGmail" v-if="help==0">
             <img src="/img/gmail_logo.png" alt="GoogleLogo" class="setGoogleLogo">
             <span>Gmail</span>
         </div>
 
         <!-- 设置选择QQ邮箱添加或者默认时的页面 -->
-        <div class="setQQMain" v-if="select==1">
+        <div class="setQQMain" v-if="select==1&&help==0">
             <div class="setHeader">
                 <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
                 <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
@@ -34,14 +34,14 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <img src="img/set-img.png" alt="Logo" class="setImg">
+                    <img src="img/set-img.png" alt="Logo" class="set-img1">
                 </el-form-item>
                 
             </div>
         </div>
 
         <!-- 设置选择163邮箱时的页面 -->
-        <div class="set163Main" v-if="select==2">
+        <div class="set163Main" v-if="select==2&&help==0">
             <div class="setHeader">
                 <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
                 <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
@@ -59,14 +59,14 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <img src="img/set-img.png" alt="Logo" class="setImg">
+                    <img src="img/set-img2.jpg" alt="Logo" class="set-img2">
                 </el-form-item>
                 
             </div>
         </div>
 
         <!-- 设置选择谷歌邮箱的页面 -->
-        <div class="setGMain" v-if="select==3">
+        <div class="setGMain" v-if="select==3&&help==0">
             <div class="setHeader">
                 <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
                 <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
@@ -83,11 +83,29 @@
                 </el-form-item>
 
                 <el-form-item>
-                    <img src="img/set-img.png" alt="Logo" class="setImg">
+                    <img src="img/set-img3.png" alt="Logo" class="set-img3">
                 </el-form-item>
                 
             </div>
         </div>
+
+                <!-- 设置帮助向导的页面 -->
+                <div class="helpMain" v-if="help==1">
+                    <div class="helpContent" >
+                        <h1 style="font-size:30px;font-weight:bold;text-align:center;">添加须知</h1>
+                        <p style="text-align:justify;text-indent: 2em;font-size:20px;">亲爱的用户，您好！如果想要了解如何正确添加邮箱，请阅读以下内容：</p>
+                        <ol style="text-align:justify;font-size:20px;">
+                        <li>点击对应左侧方框，选择您想要添加的邮箱</li>
+                        <li>在添加邮箱后可返回首页，若添加邮箱按钮下出现对应邮箱，则添加成功</li>
+                        </ol>
+                        <p style="text-align: justify;text-indent: 2em;font-size:20px;">祝您使用愉快！</p>
+
+                        <el-form-item class="helpButton">
+                            <el-button type="danger" @click="ACKHelp" round size="large">我已了解</el-button>
+                        </el-form-item>
+                    </div>
+                </div>
+
     </div>
 </template>
 
@@ -100,6 +118,7 @@ export default{
             add163mail:'',
             addGmail:'',
             select:1,
+            help:0,
         }
     },
     methods: {
@@ -120,7 +139,7 @@ export default{
             this.$router.push("/home");
         },
         want_help(){
-
+            this.help=1;
         },  
         SelectQQmail(){
             this.select=1;
@@ -130,6 +149,10 @@ export default{
         },
         SelectGmail(){
             this.select=3;
+        },
+        ACKHelp(){
+            this.select=1;
+            this.help=0;
         },
     },
 }
@@ -300,9 +323,42 @@ input::placeholder{
     
 }
 
-.setImg{
+.set-img1{
     height: 100px;
     padding-left:70px;
     padding-top:30px;
+}
+.set-img2{
+    height: 100px;
+    padding-left:70px;
+    padding-top:30px;
+}
+.set-img3{
+    height: 100px;
+    padding-left:70px;
+    padding-top:30px;
+}
+
+.helpMain{
+    position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -250px;
+  width: 450px;
+  height: 500px;
+  border-radius: 5%;
+  opacity: 90%;
+  background:-webkit-linear-gradient(bottom,lightblue,white);
+}
+
+.helpContent{
+    padding-top: 10%;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.helpButton{
+    padding-left: 35%;
 }
 </style>
