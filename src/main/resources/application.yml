@@ -1,0 +1,12 @@
+
+server:
+  port: 8080
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/tinymail
+    username: postgres
+    password: 214615
+    driver-class-name: org.postgresql.Driver
+
+
+
