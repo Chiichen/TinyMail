@@ -360,6 +360,13 @@ public class IMAP {
 
                 response = in.readLine();
             }
+            while(boundary.contains("\\")||boundary.contains("+")||boundary.contains("*")||boundary.contains(".")){
+                boundary.replace("\\","\\\\\\\\");
+                boundary.replace("+","\\\\+");
+                boundary.replace("*","\\\\*");
+                boundary.replace(".","\\\\.");
+            }
+
 
             response=in.readLine();//处理a OK FETCH Completed
             contentType_Map.put(index,contentType);
@@ -429,6 +436,12 @@ public class IMAP {
                                str=str.replace("\n","");
                                plain=Base64Decoder.decodeBase64(str);
 
+                           }else if(encodingtype[i].toLowerCase().contains("8bit")){
+                               if(arr[i].endsWith("--"))
+                                   arr[i]=arr[i].substring(0,arr[i].length()-2);
+                               String str=(arr[i].substring(arr[i].indexOf("8bit") + 4));
+                               str=str.replace("\n","");
+                               plain=Eight_BitDecoder.decoder(str);
                            }
                            while(plain.startsWith("\n")){
                                plain=plain.substring(plain.indexOf("\n")+1);
@@ -448,6 +461,12 @@ public class IMAP {
                                String str=(arr[i].substring(arr[i].indexOf("base64") + 6));
                                str=str.replace("\n","");
                                html=Base64Decoder.decodeBase64(str);
+                           }else if(encodingtype[i].toLowerCase().contains("8bit")){
+                               if(arr[i].endsWith("--"))
+                                   arr[i]=arr[i].substring(0,arr[i].length()-2);
+                               String str=(arr[i].substring(arr[i].indexOf("8bit") + 4));
+                               str=str.replace("\n","");
+                               html=Eight_BitDecoder.decoder(str);
                            }
                            while(html.startsWith("\n")){
                                html=html.substring(html.indexOf("\n")+1);
@@ -518,7 +537,7 @@ public class IMAP {
     }
 
     //获取全部
-    public IMAP getall(){
+    public IMAP getallheader(){
 
 
 
@@ -528,14 +547,11 @@ public class IMAP {
 
         select("INBOX");
         get_select_response();
-        getNumOfEmail();
         for(int i=1;i<=getNumOfEmail();i++){
             fetchHEADER_From(i);
             fetchHEADER_Subject(i);
             fetchHEADER_Date(i);
             fetchHEADER_To(i);
-            fetchHEADER_Boundary(i);
-            fetchHEADER_Text(i);
         }
         return this;
     }
@@ -548,14 +564,8 @@ public class IMAP {
 
         select("INBOX");
         get_select_response();
-        getNumOfEmail();
-
-            fetchHEADER_From(index);
-            fetchHEADER_Subject(index);
-            fetchHEADER_Date(index);
-            fetchHEADER_To(index);
-            fetchHEADER_Boundary(index);
-            fetchHEADER_Text(index);
+        fetchHEADER_Boundary(index);
+        fetchHEADER_Text(index);
 
         return this;
     }
