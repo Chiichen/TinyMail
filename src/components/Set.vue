@@ -1,26 +1,27 @@
 <template>
   <div class="setBody">
 
-    <div class="setQQmail" @click="SelectQQmail">
-      <img src="/img/qqmail_logo.png" alt="QQLogo" class="setQQLogo">
+        <div class="setQQmail" @click="SelectQQmail" v-if="help==0">
+            <img src="/img/qqmail_logo.png" alt="QQLogo" class="setQQLogo">
 
     </div>
 
-    <div class="set163mail" @click="Select163mail">
-      <img src="/img/163mail_logo.png" alt="163Logo" class="set163Logo">
-    </div>
+        <div class="set163mail" @click="Select163mail" v-if="help==0">
+            <img src="/img/163mail_logo.png" alt="163Logo" class="set163Logo">
+        </div>
 
-    <div class="setGmail" @click="SelectGmail">
-      <img src="/img/gmail_logo.png" alt="GoogleLogo" class="setGoogleLogo">
-      <span>Gmail</span>
-    </div>
+        <div class="setGmail" @click="SelectGmail" v-if="help==0">
+            <img src="/img/gmail_logo.png" alt="GoogleLogo" class="setGoogleLogo">
+            <span>Gmail</span>
+        </div>
 
-    <!-- 设置选择QQ邮箱添加或者默认时的页面 -->
-    <div class="setQQMain">
-      <div class="setHeader">
-        <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
-        <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
-      </div>
+        <!-- 设置选择QQ邮箱添加或者默认时的页面 -->
+<!--    v-if="select==1&&help==0"-->
+        <div class="setQQMain" >
+            <div class="setHeader">
+                <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
+                <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
+            </div>
 
       <div :class="{setQQLogo:select===1,set163Logo:select===2,setGoogleLogo:select===3}">
         <img :src="imgArr[select-1]" alt="Logo">
@@ -118,6 +119,7 @@ export default {
       password: "",
       select: 1,
       radio:'',
+		help:0,
     }
   },
   methods: {
@@ -149,8 +151,13 @@ export default {
       this.$router.push("/home");
     },
     add_QQmail() {
-
+            this.help=1;
       this.$router.push("/home");
+
+    },
+    ACKHelp(){
+      this.select=1;
+      this.help=0;
     },
     add_163mail() {
 
@@ -358,9 +365,42 @@ input::placeholder {
 
 }
 
-.setImg {
-  height: 100px;
-  padding-left: 70px;
-  padding-top: 30px;
+.set-img1{
+    height: 100px;
+    padding-left:70px;
+    padding-top:30px;
+}
+.set-img2{
+    height: 100px;
+    padding-left:70px;
+    padding-top:30px;
+}
+.set-img3{
+    height: 100px;
+    padding-left:70px;
+    padding-top:30px;
+}
+
+.helpMain{
+    position: absolute;
+  top: 40%;
+  left: 50%;
+  margin-top: -200px;
+  margin-left: -250px;
+  width: 450px;
+  height: 500px;
+  border-radius: 5%;
+  opacity: 90%;
+  background:-webkit-linear-gradient(bottom,lightblue,white);
+}
+
+.helpContent{
+    padding-top: 10%;
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.helpButton{
+    padding-left: 35%;
 }
 </style>

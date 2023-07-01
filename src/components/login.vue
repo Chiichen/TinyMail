@@ -27,12 +27,13 @@
             <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
           </el-form-item>
 
-          <!-- 在上述账号密码格式都正确的情况下才能确定的功能还没实现 -->
+
           <el-form-item>
             <el-button type="success" @click="overRegister" >确认</el-button>
           </el-form-item>
 
         </el-form>
+
       </div>
 
     </div>
@@ -73,6 +74,8 @@
       </div>
 
     </div>
+
+    <el-alert :title="err" type="error" effect="dark" :description="desc" v-if="err!==''" @close="closeErr"/>
   </div>
   <router-view v-if="!isLogin"></router-view>
 </template>
@@ -89,6 +92,8 @@ export default {
       isLogin:true,
       base64Data:'',
       ACKLogin:true,
+      err:"",//错误的信息
+      desc:"",//错误的详细信息
 
       loginForm:{
         userName:'',
@@ -151,7 +156,13 @@ export default {
         this.base64Data=res.data.msg
       }).catch(res=>{
         console.log(res)
+        this.err=res.data.msg
       })
+    },
+    closeErr(){
+      console.log("")
+      this.err=""
+      this.desc=""
     },
     loginButton(){
       /*
@@ -209,14 +220,17 @@ export default {
           console.log(res)
           sessionStorage.setItem("username",this.loginForm.userName)
           sessionStorage.setItem("token","")
-
+          this.$router.push("/home")
+          this.isLogin=false
 
         }).catch(res=>{
           console.log(res)
           //todo 提示错误
+          this.err=res.response.data.msg
+          this.desc=res.response.data.data
+          console.log(this.err)
         })
-        this.$router.push("/home")
-        this.isLogin=false
+
 
     },
     registerButton(){
@@ -270,6 +284,8 @@ export default {
       }).catch(res=>{
         console.log(res)
         //todo 提示错误
+        this.err=res.response.data.msg
+        console.log(this.err)
       })
 
       /* 添加提交的部分 */
@@ -292,6 +308,17 @@ export default {
 
 <style scoped >
 
+.el-alert {
+  margin: 20px 0 0;
+
+  position: absolute;
+  top: 1%;
+  left: 50%;
+  /*margin-top: -200px;*/
+  margin-left: -250px;
+  width: 450px;
+  height: 50px;
+}
 .logo {
   text-align: center;
   margin-top: 20px;
