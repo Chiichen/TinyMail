@@ -17,22 +17,26 @@
 
         <!-- 设置选择QQ邮箱添加或者默认时的页面 -->
 <!--    v-if="select==1&&help==0"-->
-        <div class="setQQMain" >
+        <div class="setQQMain" v-if="help==0">
             <div class="setHeader">
                 <el-button class="cancelButton" text style="font-size: large;" @click="return_back"><b>取消</b></el-button>
                 <el-button text style="font-size: large;" @click="want_help"><b>帮助</b></el-button>
             </div>
 
-      <div :class="{setQQLogo:select===1,set163Logo:select===2,setGoogleLogo:select===3}">
-        <img :src="imgArr[select-1]" alt="Logo">
+      <div :class="{showQQLogo:select===1,show163Logo:select===2,showGLogo:select===3}">
+        <img :src="imgArr[select-1]" alt="Logo" >
       </div>
 
       <div class="setContent">
         <input :model="addmail" :placeholder='mailArr[select-1]' type="text" style="width:250px" size="large"
                class="inputForm"/>
-        <el-input size="medium" type="password" v-model="password" style="width:200px" placeholder='邮箱密码/授权码'
+        <el-input size="medium" type="password" v-model="password" style="margin-top: -30px; width:200px" placeholder='邮箱密码/授权码'
                   show-password></el-input>
-        <div style="margin-top: 20px">
+        <div class="tip">
+            <span style="color:rgb(107, 44, 232)">请选择其中一种方式：</span>
+        </div>
+        
+        <div style="margin-top: 20px;margin-bottom:30px">
           <el-radio-group v-model="radio" size="large">
             <el-radio-button label="SMTP"/>
             <el-radio-button label="IMAP"/>
@@ -48,13 +52,27 @@
           </el-button>
         </el-form-item>
 
-        <el-form-item>
-          <img src="img/set-img.png" alt="Logo" class="setImg">
-        </el-form-item>
+       
 
       </div>
     </div>
 
+ <!-- 设置帮助向导的页面 -->
+ <div class="helpMain" v-if="help==1">
+                    <div class="helpContent" >
+                        <h1 style="font-size:30px;font-weight:bold;text-align:center;">添加须知</h1>
+                        <p style="text-align:justify;text-indent: 2em;font-size:20px;">亲爱的用户，您好！如果想要了解如何正确添加邮箱，请阅读以下内容：</p>
+                        <ol style="text-align:justify;font-size:20px;">
+                        <li>点击对应左侧方框，选择您想要添加的邮箱</li>
+                        <li>在添加邮箱后可返回首页，若添加邮箱按钮下出现对应邮箱，则添加成功</li>
+                        </ol>
+                        <p style="text-align: justify;text-indent: 2em;font-size:20px;">祝您使用愉快！</p>
+
+                        <el-form-item class="helpButton">
+                            <el-button type="danger" @click="ACKHelp" round size="large">我已了解</el-button>
+                        </el-form-item>
+                    </div>
+                </div>
     <!--        &lt;!&ndash; 设置选择163邮箱时的页面 &ndash;&gt;-->
     <!--        <div class="set163Main" v-if="select==2">-->
     <!--            <div class="setHeader">-->
@@ -171,7 +189,7 @@ export default {
       this.$router.push("/home");
     },
     want_help() {
-
+        this.help=1;
     },
     SelectQQmail() {
       this.select = 1;
@@ -251,7 +269,7 @@ export default {
 .setGoogleLogo {
   position: absolute;
   top: 35%;
-  left: 50%;
+  left: 42%;
   height: 35%;
   transform: translate(-50%, -50%);
   height: 75px;
@@ -260,7 +278,7 @@ export default {
 
 .setGmail span {
   position: absolute;
-  top: 60%;
+  top: 65%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 38px;
@@ -322,25 +340,39 @@ export default {
 }
 
 .showQQLogo {
-  padding-top: 10%;
+  padding-top: 5%;
   padding-left: 80px;
   height: 10px;
 
 }
+.showQQLogo img{
+    padding-top:20px;
+}
+
 
 .show163Logo {
-  padding-top: 10%;
-  padding-left: 80px;
-  /*height: 10px;*/
-  height: 30px;
-  width: 200px;
-
-}
-
-.showGLogo {
-  padding-top: 10%;
+  padding-top: 5%;
   padding-left: 80px;
   height: 10px;
+
+}
+.show163Logo img{
+    padding-top:20px;
+    width:200px;
+    height:40px;
+}
+
+
+.showGLogo {
+  padding-top: 5%;
+  padding-left: 80px;
+  height: 10px;
+}
+
+.showGLogo img{
+    height:90px;
+    padding-left: 18%;
+    
 }
 
 .setContent {
@@ -353,11 +385,19 @@ export default {
   border: none;
   outline: none;
   border-bottom: 2px solid #484747;
-  margin-bottom: 40px;
+  margin-bottom: 35px;
 }
 
 input::placeholder {
   font-size: large;
+}
+
+.tip{
+    padding-top:20px;
+    font-size:small;
+    font-family: '微软雅黑';
+    margin-bottom: -10px;
+    font-weight: bold;
 }
 
 .addButton {
@@ -365,21 +405,7 @@ input::placeholder {
 
 }
 
-.set-img1{
-    height: 100px;
-    padding-left:70px;
-    padding-top:30px;
-}
-.set-img2{
-    height: 100px;
-    padding-left:70px;
-    padding-top:30px;
-}
-.set-img3{
-    height: 100px;
-    padding-left:70px;
-    padding-top:30px;
-}
+
 
 .helpMain{
     position: absolute;
