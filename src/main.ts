@@ -11,6 +11,7 @@ import Login from "./components/Login.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
 import Set from "./components/Set.vue";
+import Modify from "./components/Modify.vue";
 
 import './assets/global.css'
 import App from './App.vue'
@@ -41,13 +42,18 @@ const routes=[
                 path:'/email/:id',
                 component:email,
             }
-
+            ,
+            {
+                path:'Modify',
+                component:Modify,
+            }
         ]
     },
     {
         path:'/set',
         component:Set,
-    }
+    },
+    
 
 
 ];

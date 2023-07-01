@@ -17,17 +17,27 @@
 
       <el-dropdown-menu >
 
-        <el-dropdown-item disabled v-for="item in items" :key="item.id">
-          <div style="text-align:center;background-image: linear-gradient(to right,#94a1aa,#FFFFFF); color:black">
-            <span style="font-size:18px">{{item.name}}</span>
-          <br><span>{{item.email}}</span>
+        <el-dropdown-item>
+          <div style="padding-left:20px;text-align:center;background-image: linear-gradient(to right,#94a1aa,#FFFFFF); color:black">
+            <span style="font-size:20px;">{{NAME}}</span>
+          </div>
+        </el-dropdown-item>
+        
+        <el-dropdown-item disabled v-for="item in items" :key="item.id" divided >
+          <div style="text-align:center;color:black;font-size: 13px;font-family: '微软雅黑';">
+            <span >{{item.email}}</span>
           </div>
 
         </el-dropdown-item>
 
-        <el-dropdown-item @click="want_set" divided style="text-align:center">
-            <el-icon style="font-size:16px;margin-right: 9px;"><CirclePlusFilled /></el-icon>
-            <span style="font-size:16px;">添加邮箱</span>
+        <el-dropdown-item @click="want_set" divided style="text-align:center;font-weight: bold;">
+            <el-icon style="font-size:15px;margin-right: 9px;"><CirclePlusFilled /></el-icon>
+            <span style="font-size:15px;">添加邮箱</span>
+        </el-dropdown-item>
+
+        <el-dropdown-item  divided style="text-align:center;font-weight: bold;" @click="want_modify">
+            <el-icon style="font-size:15px;margin-right: 9px;"><House /></el-icon>
+            <span style="font-size:15px;">个人中心</span>
         </el-dropdown-item>
 
 
@@ -85,9 +95,11 @@ export default {
   data(){
     return {
       isWelcome:true,
-      items:[{id:1,name:'HUAZI',email:'HUAZI@qq.com'},
-          {id:2,name:'ZIHUA',email:'ZIHUA@163.com'},],
+      items:[{id:1,email:'HUAZI@qq.com'},
+          {id:2,email:'ZIHUA@163.com'},],
+          NAME:'',
     }
+      
 
   },
   methods:{
@@ -127,6 +139,13 @@ export default {
       want_set(){
         this.$router.push("/set");
       },
+      
+      /* 进入个人中心页面 */
+      want_modify(){
+        this.$router.push("/home/modify")
+      this.isWelcome=false
+      emitter.on('back',this.back)
+      },
 
 
       /* 获取已添加邮箱的数据 */
@@ -137,6 +156,7 @@ export default {
   beforeCreate() {
 
     var username = sessionStorage.getItem("username");
+    this.NAME=username;
     console.log("获取用户设置",username)
     var formData = new FormData();
     formData.append("username",username)
@@ -160,6 +180,10 @@ export default {
     }).catch(res=>{
       console.log(res)
     })
+  },
+  created() {
+    var username = sessionStorage.getItem("username");
+    this.NAME=username;
   },
   computed:{
 
@@ -193,6 +217,7 @@ export default {
  .setButton{
   margin-right:30px;
  }
+
 
   .el-aside{
      background-color: #3a3f4f;
