@@ -60,6 +60,7 @@ public class IMAP {
             in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out=new PrintWriter(socket.getOutputStream(),true);
             get_isInitialize();
+            System.out.println(1);
             return this;
         }catch (InitializeException e){
             e.printStackTrace();
@@ -360,13 +361,10 @@ public class IMAP {
 
                 response = in.readLine();
             }
-            while(boundary.contains("\\")||boundary.contains("+")||boundary.contains("*")||boundary.contains(".")){
-                boundary.replace("\\","\\\\\\\\");
-                boundary.replace("+","\\\\+");
-                boundary.replace("*","\\\\*");
-                boundary.replace(".","\\\\.");
-            }
-
+            boundary=boundary.replaceAll("\\\\","\\\\\\\\\\\\\\\\");
+            boundary=boundary.replaceAll("\\+","\\\\\\\\+");
+            boundary=boundary.replaceAll("\\*","\\\\\\\\*");
+            boundary=boundary.replaceAll("\\.","\\\\\\\\.");
 
             response=in.readLine();//处理a OK FETCH Completed
             contentType_Map.put(index,contentType);
