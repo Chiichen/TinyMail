@@ -60,7 +60,6 @@ public class IMAP {
             in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out=new PrintWriter(socket.getOutputStream(),true);
             get_isInitialize();
-            System.out.println(1);
             return this;
         }catch (InitializeException e){
             e.printStackTrace();
