@@ -1,5 +1,6 @@
 package edu.scut.tinymail.utils.IMAP;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
@@ -7,7 +8,7 @@ import java.util.Base64;
 public class Base64Decoder {
     public static String decodeBase64Printable(String str){
         unequal(str);
-        if(str.contains("?B?")){
+        if(str.toLowerCase().contains("?b?")){
             String[] arr=str.split("\\?");
             String charsetName= arr[1];
             int[] index=new int[10];
@@ -60,6 +61,14 @@ public class Base64Decoder {
 
     }
 
+    public static String decodeBase64(String encodeText) throws UnsupportedEncodingException {
+// 使用Base64解码Base64编码
+
+        byte[] decodeAttach = Base64.getDecoder().decode(encodeText);
+
+            return new String(decodeAttach,StandardCharsets.UTF_8);
+
+    }
     public static String unequal(String str){
         if(str.length()%4!=0){
             int length = 4 - str.length() % 4;

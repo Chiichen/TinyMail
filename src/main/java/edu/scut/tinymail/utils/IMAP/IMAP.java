@@ -1,47 +1,36 @@
 package edu.scut.tinymail.utils.IMAP;
 
-import lombok.Getter;
-import lombok.Setter;
-
+import javax.swing.text.html.HTML;
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.HashMap;
-
+import java.net.UnknownHostException;
+import java.rmi.UnexpectedException;
+import java.util.Date;
 
 public class IMAP {
 
-    private int serialnumber = 1;
+    private int serialnumber =1;
     private BufferedReader in;
     private PrintWriter out;
 
-    private String response = "";
+    private String response="";
 
-    private String plain_body = "";
+    private String plain_body="";
 
-    private String image = "";
+    private String image="";
 
-    private String html_body = "";
-    @Setter
-    @Getter
-    private HashMap<Integer, String> plain_body_list = new HashMap<>();
-
-    @Setter
-    @Getter
-    private HashMap<Integer, String> html_body_list = new HashMap<>();
-
-    @Setter
-    @Getter
-    private HashMap<Integer, String> image_list = new HashMap<>();
-
-    public IMAP Initialize(String serverName, String serverPort) {
-        try {
-            Socket socket = new Socket(serverName, Integer.parseInt(serverPort));
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            out = new PrintWriter(socket.getOutputStream(), true);
+    private String html_body="";
+    public  IMAP Initialize(String serverName,String serverPort){
+        try{
+            Socket socket=new Socket(serverName,Integer.parseInt(serverPort));
+            in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            out=new PrintWriter(socket.getOutputStream(),true);
             return this;
-        } catch (Exception e) {
+        }catch (Exception e){
             e.printStackTrace();
         }
 
@@ -112,15 +101,13 @@ public class IMAP {
     }
 
     public IMAP fetchs(int[] index){
-        for(int i=0;i<index.length;i++) {
+        for(int i=0;i<index.length;i++){
             fetch(index[i]);
-            System.out.println("第" + i + "封邮件");
+            System.out.println("第"+i+"封邮件");
             getBody();
-            plain_body_list.put(index[i], plain_body);
-
-            plain_body = "";
-            html_body = "";
-            image = "";
+            plain_body="";
+            html_body="";
+            image="";
         }
         return this;
     }
@@ -175,33 +162,33 @@ public class IMAP {
                         }
                     }
                     if(response.contains("text/html")){
-                        html_body = get_Multipart_HTML(boundary);
+                        html_body=get_Multipart_HTML(boundary);
                     }
-                    if (response.contains("image")) {
-                        image = get_Image(boundary);
+                    if(response.contains("image")){
+                        image=get_Image(boundary);
                     }
-                    boundary = boundary + getBoundary();
+                    boundary=boundary+getBoundary();
 
 //                    getHTML(html_body,boundary);
 
                 }
-//
-//                System.out.println(decode.decoded(subject));
-//                System.out.println("发件人: "+decode.decoded(from));
-//                if(date!=""){
-//                    System.out.println("时间: "+decode.decoded(date));
-//                }
-//                System.out.println("主题: "+decode.decoded(subject));
-//                System.out.println("收件人: "+decode.decoded(to));
-//                if(plain_body!=""){
-//                    System.out.println("正文："+plain_body);
-//                }
-//                if(html_body!=""){
-//                    System.out.println("HTML: "+html_body);
-//                }
-//                if(image!=""){
-//                    System.out.println("Image: "+image);
-//                }
+
+                System.out.println(decode.decoded(subject));
+                System.out.println("发件人: "+decode.decoded(from));
+                if(date!=""){
+                    System.out.println("时间: "+decode.decoded(date));
+                }
+                System.out.println("主题: "+decode.decoded(subject));
+                System.out.println("收件人: "+decode.decoded(to));
+                if(plain_body!=""){
+                    System.out.println("正文："+plain_body);
+                }
+                if(html_body!=""){
+                    System.out.println("HTML: "+html_body);
+                }
+                if(image!=""){
+                    System.out.println("Image: "+image);
+                }
 
             }catch (Exception e){
 
