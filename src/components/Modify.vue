@@ -55,15 +55,15 @@
                 <span style="font-size: 25px;color: rgb(0, 0, 0);padding-left: 35%;">修改密码</span>
             </div>
             <el-form style="padding-left: 10%;" :rules="modifyRules" :model="modifyForm">
-                <el-form-item label="原密码：" >
+                <el-form-item label="原密码："  prop="originalPW">
             <el-input size="medium" type="password" v-model="modifyForm.originalPW" placeholder="请输入原密码" style="width:200px"  show-password clearable></el-input>
           </el-form-item>
 
-          <el-form-item  label="新密码："  >
+          <el-form-item  label="新密码："  prop="newPWA">
             <el-input size="medium" type="password" v-model="modifyForm.newPWA" placeholder="请输入新密码"  style="width:200px" show-password  clearable></el-input>
           </el-form-item>
 
-          <el-form-item  label="新密码："  >
+          <el-form-item  label="新密码：" prop="newPWB" >
             <el-input size="medium" type="password" v-model="modifyForm.newPWB" placeholder="请再次输入新密码"  style="width:200px" show-password  clearable></el-input>
           </el-form-item>
 
@@ -92,7 +92,7 @@ export default{
                 newPWA:'',
                 newPWB:'',
             },
-            /* modifyRules:{
+            modifyRules:{
             originalPW:[{ required: true, message: "请输入原密码", trigger: "blur" },{
           min:6,
           max:20,
@@ -115,7 +115,7 @@ export default{
           trigger:'blur'
         }
         ],
-        }, */
+        },
         }
         
     },
