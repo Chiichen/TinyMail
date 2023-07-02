@@ -10,6 +10,7 @@ import Home from "./components/Home.vue";
 import Welcome from "./components/Welcome.vue";
 import Writing from "./components/Writing.vue";
 import Receiving from "./components/Receiving.vue";
+import Modify from "./components/Modify.vue";
 
 export default{
   data(){
@@ -23,6 +24,7 @@ export default{
     Writing,
     Receiving,
     Welcome,
+    Modify,
   }
 }
 </script>
