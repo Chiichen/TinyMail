@@ -16,6 +16,7 @@ import './assets/global.css'
 import App from './App.vue'
 import 'element-plus/dist/index.css'
 import email from "./components/email.vue";
+import {mobileTipjs} from './js/tip.js'
 
 const routes=[
 
@@ -61,6 +62,8 @@ const app=createApp(App);
 
 app.use(ElementPlus)
 app.use(router).mount('#app');
+
+app.config.globalProperties.$tips = mobileTipjs;
 
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component)

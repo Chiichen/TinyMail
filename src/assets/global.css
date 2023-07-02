@@ -5,4 +5,16 @@ body,
     margin: 0;
     padding: 0;
 }
+.wrapper {
+    margin: 20px 0 0;
+
+    position: absolute;
+    top: 1%;
+    left: 50%;
+    /*margin-top: -200px;*/
+    margin-left: -250px;
+    width: 450px;
+    height: 50px;
+}
+
 

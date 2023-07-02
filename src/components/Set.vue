@@ -35,7 +35,7 @@
         <div class="tip">
             <span style="color:rgb(107, 44, 232)">请选择其中一种方式：</span>
         </div>
-        
+
         <div style="margin-top: 20px;margin-bottom:30px">
           <el-radio-group v-model="radio" size="large">
             <el-radio-button label="SMTP"/>
@@ -52,7 +52,7 @@
           </el-button>
         </el-form-item>
 
-       
+
 
       </div>
     </div>
@@ -153,20 +153,31 @@ export default {
       }
       var username = sessionStorage.getItem("username");
       formData.append("username",username)
-      formData.append("serverusername",this.addmail)//邮箱地址
-      formData.append("serverpassword",this.password)//
-      axios({
-        method: 'post',
-        url: '/api/api/user/addsetting',
-        data:formData
-      }).then(res=>{
-        console.log(res)
+      //匹配邮箱地址
 
-      }).catch(res=>{
-        console.log(res)
-        //todo 提示错误
-      })
-      this.$router.push("/home");
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (this.addmail.match(emailRegex)) {
+        console.log("邮箱地址格式正确");
+        formData.append("serverusername",this.addmail)//邮箱地址
+        formData.append("serverpassword",this.password)//
+        axios({
+          method: 'post',
+          url: '/api/api/user/addsetting',
+          data:formData
+        }).then(res=>{
+          console.log(res)
+
+        }).catch(res=>{
+          console.log(res)
+          //todo 提示错误
+        })
+        this.$router.push("/home");
+      } else {
+        console.log("邮箱地址格式不正确");
+
+      }
+
+
     },
     add_QQmail() {
             this.help=1;
@@ -372,7 +383,7 @@ export default {
 .showGLogo img{
     height:90px;
     padding-left: 18%;
-    
+
 }
 
 .setContent {

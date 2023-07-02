@@ -75,25 +75,27 @@
 
     </div>
 
-    <el-alert :title="err" type="error" effect="dark" :description="desc" v-if="err!==''" @close="closeErr"/>
+<!--    <el-alert :title="$GlobalErr" type="error" effect="dark" :description="desc" v-if="err!==''" @close="closeErr"/>-->
   </div>
   <router-view v-if="!isLogin"></router-view>
+
+
+
 </template>
 
 <script >
 import axios from 'axios'
-import {getCurrentInstance} from 'vue'
+import mobileTip from "./mobileTip.vue";
 export default {
   name:"Login",
-
-
+  components: {mobileTip},
   data(){
     return{
       isLogin:true,
       base64Data:'',
       ACKLogin:true,
-      err:"",//错误的信息
-      desc:"",//错误的详细信息
+      // err:"",//错误的信息
+      // desc:"",//错误的详细信息
 
       loginForm:{
         userName:'',
@@ -156,14 +158,16 @@ export default {
         this.base64Data=res.data.msg
       }).catch(res=>{
         console.log(res)
-        this.err=res.data.msg
+        // this.err=res.data.msg
+        // this.$GlobalErr=res.response.data.msg
+        // this.$GlobalDesc=res.response.data.data
       })
     },
-    closeErr(){
-      console.log("")
-      this.err=""
-      this.desc=""
-    },
+    // closeErr(){
+    //   console.log("")
+    //   this.err=""
+    //   this.desc=""
+    // },
     loginButton(){
       /*
     post常用的请求数据（data）格式有两种：
@@ -226,9 +230,18 @@ export default {
         }).catch(res=>{
           console.log(res)
           //todo 提示错误
-          this.err=res.response.data.msg
-          this.desc=res.response.data.data
-          console.log(this.err)
+          // this.err=res.response.data.msg
+          // this.desc=res.response.data.data
+          // this.$GlobalErr=res.response.data.msg
+          // this.$GlobalDesc=res.response.data.data
+           console.log(this)
+          this.$tips({
+            // tip:res.response.data.msg,
+            // tipDetail:res.response.data.data,
+            tip:"登录失败",
+            tipDetail:"验证码不正确，请重新输入",
+            type: 'error'
+          })
         })
 
 
@@ -284,8 +297,8 @@ export default {
       }).catch(res=>{
         console.log(res)
         //todo 提示错误
-        this.err=res.response.data.msg
-        console.log(this.err)
+        this.$GlobalErr=res.response.data.msg
+        this.$GlobalDesc=res.response.data.data
       })
 
       /* 添加提交的部分 */
