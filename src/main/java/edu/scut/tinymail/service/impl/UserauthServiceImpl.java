@@ -50,10 +50,11 @@ public class UserauthServiceImpl extends ServiceImpl<UserauthMapper, Userauth> i
         if (userauthMapper.selectOne(queryWrapper) != null) return new ResponseResult<>(401, "用户名已存在");
         else {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            userauthMapper.insert(new Userauth(null,
+            userauthMapper.insert(new Userauth(
                     userauth.getUsername(),
                     userauth.getNickname(),
                     bCryptPasswordEncoder.encode(userauth.getPassword()),
+                    null,
                     Collections.singletonList("user")));
             return new ResponseResult<>(200, "成功注册");
         }

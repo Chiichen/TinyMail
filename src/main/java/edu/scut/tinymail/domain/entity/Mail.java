@@ -17,5 +17,8 @@ public class Mail {
     String fromAddress;
     @Schema(description = "收件人地址")
     String toAddress;
+    @Schema(description = "发件时间")
+    String Date;
+
 
 }

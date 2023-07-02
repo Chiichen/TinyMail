@@ -51,11 +51,25 @@ public class MailController {
         return mailService.attachedSend(username, serverusername, mail, files);
     }
 
-    @Operation(summary = "获取邮件")
-    @PostMapping("/api/getmail")
-    public ResponseResult<?> gerMails(String username, String serverusername) {
+    @Operation(summary = "获取邮件简介")
+    @PostMapping("/api/mail/getinfo")
+    public ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException {
 
-        return mailService.getMails(username, serverusername);
+        return mailService.getMails(username, serverusername, pagenum);
+    }
+
+    @Operation(summary = "获取邮件")
+    @PostMapping("/api/mail/getdetail")
+    public ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
+
+        return mailService.getMailDetail(username, serverusername, index);
+    }
+
+    @Operation(summary = "获取邮件附件")
+    @PostMapping("/api/mail/getAttachment")
+    public ResponseResult<?> getMailAttachment(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
+
+        return mailService.getAttachment(username, serverusername, index);
     }
 
 

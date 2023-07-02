@@ -6,6 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 public class Base64Decoder {
+
+
     public static String decodeBase64Printable(String str){
         unequal(str);
         if(str.toLowerCase().contains("?b?")){
