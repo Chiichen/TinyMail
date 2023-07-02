@@ -140,8 +140,7 @@ public class MIME {
     private static String getFormatted() {
         ZonedDateTime now = ZonedDateTime.now(ZoneOffset.of("+8"));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z '('z')'");
-        String formatted = now.format(formatter);
-        return formatted;
+        return now.format(formatter);
     }
 
     // 发送邮件正文
