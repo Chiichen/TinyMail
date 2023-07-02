@@ -45,13 +45,15 @@ public class Base64Decoder {
 
 
                 }
-                byte [] bytes= Base64.getDecoder().decode(encodeText);
-                Charset charset= StandardCharsets.UTF_8;
-                if("ISO-2022-JP".equalsIgnoreCase(charsetName)){
-                    charset=Charset.forName("ISO-2022-JP");
+                byte[] bytes = Base64.getDecoder().decode(encodeText);
+                Charset charset = StandardCharsets.UTF_8;
+                if ("ISO-2022-JP".equalsIgnoreCase(charsetName)) {
+                    charset = Charset.forName("ISO-2022-JP");
                 }
-
-                decodedText =decodedText+new String(bytes,charset);
+                if ("GBK".equalsIgnoreCase(charsetName)) {
+                    charset = Charset.forName("GB2312");
+                }
+                decodedText = decodedText + new String(bytes, charset);
 
             }
             return decodedText;
@@ -65,17 +67,13 @@ public class Base64Decoder {
 
     public static String decodeBase64(String encodeText) throws UnsupportedEncodingException {
 // 使用Base64解码Base64编码
-
         byte[] decodeAttach = Base64.getDecoder().decode(encodeText);
-
             return new String(decodeAttach,StandardCharsets.UTF_8);
-
     }
     public static String unequal(String str){
         if(str.length()%4!=0){
             int length = 4 - str.length() % 4;
             if(!str.endsWith("=")) {
-
                 while (length != 0) {
                     str = str + "=";
                     length--;
@@ -89,6 +87,5 @@ public class Base64Decoder {
             }
         }
         return str;
-
     }
 }

@@ -92,8 +92,8 @@ public class MailServiceImpl implements MailService {
                 lowerbound = 1;
                 upperbound = imap.getNumOfEmail() % 10;
             } else {
-                lowerbound = (10 * pagenum - 10 + 1);
-                upperbound = 10 * pagenum;
+                lowerbound = imap.getNumOfEmail() - 10 * pagenum + 1;
+                upperbound = imap.getNumOfEmail() - 10 * pagenum + 10;
             }
             for (int index = lowerbound; index <= upperbound; index++) {
                 mailList.add(new Mail(imap.getSubject_Map().get(index),
@@ -102,10 +102,8 @@ public class MailServiceImpl implements MailService {
                         imap.getTo_Map().get(index),
                         imap.getDate_Map().get(index)));
             }
-            System.out.println(mailList);
+            System.out.println(mailList.size());
             return new ResponseResult<>(200, "ok", mailList);
-
-
         }
     }
 

@@ -234,8 +234,10 @@ public class IMAP {
                 }
                 response = in.readLine();
             }
-            if(from.toLowerCase().contains("utf-8")){
-                from=Base64Decoder.decodeBase64Printable(from);
+            if (from.toLowerCase().contains("utf-8?b")) {
+                from = Base64Decoder.decodeBase64Printable(from);
+            } else if (from.toLowerCase().contains("utf-8?q")) {
+                from = QuotedPrintableDecoder.decodeQuotedPrintable(from);
             }
             response=in.readLine();//处理a4 OK FETCH Completed
 //            from=Base64Decoder.decodeBase64Printable(from);
@@ -389,7 +391,6 @@ public class IMAP {
             response=in.readLine();//处理a OK FETCH Completed
            if(boundary_Map.get(index)!=""){
                String[] arr=plain_body.split(boundary_Map.get(index));
-               System.out.println(arr.length);
                String[] contenttype=new String[arr.length];
                String[] encodingtype=new String[arr.length];
                for(int i=0;i<arr.length;i++){
@@ -401,13 +402,14 @@ public class IMAP {
                    }
                    if(arr[i].contains("Content-Type:")){
                        int end;
+                       String str = arr[i].substring(arr[i].indexOf("Content-Type"));
                        if(arr[i].contains(";")){
-                           end=Math.min(arr[i].indexOf(';'),arr[i].indexOf('\n'));
+                           end = Math.min(str.indexOf(';'), str.indexOf('\n'));
                        }else{
                            end=arr[i].indexOf('\n');
                        }
+                       contenttype[i] = arr[i].substring(str.indexOf("Content-Type:") + 13, end);
 
-                       contenttype[i]=arr[i].substring(arr[i].indexOf("Content-Type:")+13,end);
                    }
 
                    if(arr[i].contains("Content-Transfer-Encoding:")){
@@ -606,7 +608,6 @@ public class IMAP {
         getList();
         select("INBOX");
         get_select_response();
-        System.out.println(getNumOfEmail());
 //        for(int i=1;i<=getNumOfEmail();i++){
 //            System.out.println("index:"+i);
 //            fetchHEADER_From(i);
@@ -615,57 +616,72 @@ public class IMAP {
 //            fetchHEADER_To(i);
 //        }
         if (10 * pagenum - 10 > getNumOfEmail()) throw new MailException.IMAPException("超出邮件范围");
+        int lowerbound = 1, upperbound = 10;
         if (10 * pagenum > getNumOfEmail()) {
-            out.println("a" + String.valueOf(serialnumber) + " FETCH " + 1 + ":" + getNumOfEmail() % 10 + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+            lowerbound = 1;
+            upperbound = getNumOfEmail() % 10;
         } else {
-            out.println("a" + String.valueOf(serialnumber) + " FETCH " + (10 * pagenum - 10 + 1) + ":" + 10 * pagenum + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+            lowerbound = getNumOfEmail() - 10 * pagenum + 1;
+            upperbound = getNumOfEmail() - 10 * pagenum + 10;
         }
-        out.println("a" + String.valueOf(serialnumber) + " FETCH 1:10 (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + lowerbound + ":" + upperbound + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
         response = in.readLine();
         int index = 1;
-        while (!response.startsWith("a4 OK")) {
-            Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
-            Matcher matcher = pattern.matcher(response);
-            if (matcher.find()) {
-                index = Integer.parseInt(matcher.group(1));
-            }
+        for (index = lowerbound; index <= upperbound; index++) {
+            while (!response.startsWith("a4 OK")) {
+                Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
+                Matcher matcher = pattern.matcher(response);
+                String peek = "";
+                if (response.contains("Subject:")) {
+                    response = response.replaceAll("(Subject: )", "");
+                    peek = in.readLine();
+                    while (peek.toLowerCase().contains("utf-8?")) {
+                        response += peek;
+                        peek = in.readLine();
+                    }
+                    DecodeResponse();
+                    getSubject_Map().put(index, response);
+                    response = peek;
+                }
+                if (matcher.find()) {
+                    index = Integer.parseInt(matcher.group(1));
+                }
+                if (response.contains("From: ")) {
+                    response = response.replaceAll("(From: )", "");
+                    DecodeResponse();
+                    getFrom_Map().put(index, response);
+                }
+                if (response.contains("To:")) {
+                    response = response.replaceAll("(To: )", "");
+                    DecodeResponse();
+                    getTo_Map().put(index, response);
+                }
 
-            if (response.contains("From: ")) {
-                response = response.replaceAll("(From: )", "");
-                DecodeResponse();
-                getFrom_Map().put(index, response);
+                if (response.contains("Date:")) {
+                    response = response.replaceAll("(Date: )", "");
+                    DecodeResponse();
+                    getDate_Map().put(index, response);
+                }
+                response = in.readLine();
             }
-            if (response.contains("To:")) {
-                response = response.replaceAll("(To: )", "");
-                DecodeResponse();
-                getTo_Map().put(index, response);
-            }
-            if (response.contains("Subject:")) {
-                response = response.replaceAll("(Subject: )", "");
-                DecodeResponse();
-                getSubject_Map().put(index, response);
-            }
-            if (response.contains("Date:")) {
-                response = response.replaceAll("(Date: )", "");
-                DecodeResponse();
-                getDate_Map().put(index, response);
-            }
-            response = in.readLine();
         }
+
         return this;
     }
 
     private void DecodeResponse() {
         if (response.toLowerCase().contains("utf-8?b")) {
-            Pattern p = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([bB])\\?)[^?]*(?=\\?=)");
-            Matcher m = p.matcher(response);
-            if (m.find()) {
-                response = m.group(0);
-            }
-            byte[] decodedBytes = Base64.getDecoder().decode(response);
-            response = new String(decodedBytes, StandardCharsets.UTF_8);
+//            Pattern p = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([bB])\\?)[^?]*(?=\\?=)");
+//            Matcher m = p.matcher(response);
+//            response = "";
+//            int matchfirst = 0;
+//            while(m.find(matchfirst))
+//            {
+//                response += m.group();
+//                matchfirst = m.end();
+//            }
+            response = Base64Decoder.decodeBase64Printable(response);
         } else if (response.toLowerCase().contains("utf-8?q")) {
-            System.out.println(response);
             Pattern p = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([qQ])\\?)[^?]*(?=\\?=)");
             Matcher m = p.matcher(response);
             if (m.find()) {
@@ -689,15 +705,54 @@ public class IMAP {
     }
 
     //单独获取某一封
-    public IMAP getplain(int index) {
+    public IMAP getplain(int index) throws IOException {
         list();
         getList();
-
-
         select("INBOX");
         get_select_response();
         fetchHEADER_Boundary(index);
         fetchplain(index);
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + index + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+        response = in.readLine();
+        while (!response.startsWith("a6 OK")) {
+            Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
+            Matcher matcher = pattern.matcher(response);
+            String peek = "";
+            if (response.contains("Subject:")) {
+                response = response.replaceAll("(Subject: )", "");
+                peek = in.readLine();
+                while (peek.toLowerCase().contains("utf-8?")) {
+                    response += peek;
+                    peek = in.readLine();
+                }
+                DecodeResponse();
+                getSubject_Map().put(index, response);
+                response = peek;
+            }
+            if (matcher.find()) {
+                index = Integer.parseInt(matcher.group(1));
+            }
+            if (response.contains("From: ")) {
+                response = response.replaceAll("(From: )", "");
+                DecodeResponse();
+                getFrom_Map().put(index, response);
+            }
+            if (response.contains("To:")) {
+                response = response.replaceAll("(To: )", "");
+                DecodeResponse();
+                getTo_Map().put(index, response);
+            }
+
+            if (response.contains("Date:")) {
+                response = response.replaceAll("(Date: )", "");
+                DecodeResponse();
+                getDate_Map().put(index, response);
+            }
+            System.out.println(response);
+            response = in.readLine();
+
+        }
+
 
         return this;
     }
