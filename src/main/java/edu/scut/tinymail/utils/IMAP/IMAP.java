@@ -373,7 +373,7 @@ public class IMAP {
         }
         return this;
     }
-    public  IMAP fetchHEADER_Text(int index){
+    public  IMAP fetchplain(int index){
 
         out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY[TEXT]");
         serialnumber++;
@@ -472,40 +472,6 @@ public class IMAP {
                                html=html.substring(0,html.length()-2);
                            }
                            HTML_Map.put(index,html);
-                       }else if(contenttype[i].contains("image")){
-                           String image="";
-                           if(arr[i].contains("Content-Disposition")){
-                               int start=arr[i].substring(arr[i].indexOf("Content-Disposition")).indexOf("\n")+arr[i].indexOf("Content-Disposition");
-                               image=arr[i].substring(start);
-                           }else{
-                               int start=arr[i].substring(arr[i].indexOf("Content-Type")).indexOf("\n")+arr[i].indexOf("Content-Type");
-                               image=arr[i].substring(start);
-                           }
-
-                           if(image.endsWith("--")){
-                               image=image.substring(0,image.length()-2);
-                           }
-                           while(image.startsWith("\n")){
-                               image=image.substring(1);
-                           }
-                           Image_Map.put(index,image);
-                       }else if(contenttype[i].contains("application")){
-                            String application="";
-                           if(arr[i].contains("Content-Disposition")){
-                               int start=arr[i].substring(arr[i].indexOf("Content-Disposition")).indexOf("\n")+arr[i].indexOf("Content-Disposition");
-                               application=arr[i].substring(start);
-                           }else{
-                               int start=arr[i].substring(arr[i].indexOf("Content-Type")).indexOf("\n")+arr[i].indexOf("Content-Type");
-                               application=arr[i].substring(start);
-                           }
-
-                           if(application.endsWith("--")){
-                               application=application.substring(0,application.length()-2);
-                           }
-                           while(application.startsWith("\n")){
-                               application=application.substring(1);
-                           }
-                           Application_Map.put(index,application);
                        }
                    }
 
@@ -516,10 +482,6 @@ public class IMAP {
                    plain_Map.put(index,plain_body);
                }else if(contentType_Map.get(index).contains("html")){
                    HTML_Map.put(index,Base64Decoder.decodeBase64Printable(plain_body));
-               }else if(contentType_Map.get(index).contains("image")){
-                   Image_Map.put(index,plain_body);
-               }else if(contentType_Map.get(index).contains("application")){
-                   Application_Map.put(index,plain_body);
                }else {
                    plain_Map.put(index,plain_body);
                }
@@ -533,6 +495,103 @@ public class IMAP {
         return this;
     }
 
+    public IMAP getAttachment(int index){
+        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY[TEXT]");
+        serialnumber++;
+        try{
+
+            response = in.readLine();
+            while(!response.startsWith(")")){
+                if(!response.startsWith("*")){
+                    plain_body= plain_body +response+"\n";
+                }
+
+                response = in.readLine();
+            }
+            response=in.readLine();//处理a OK FETCH Completed
+            if(boundary_Map.get(index)!=""){
+                String[] arr=plain_body.split(boundary_Map.get(index));
+                String[] contenttype=new String[arr.length];
+                String[] encodingtype=new String[arr.length];
+                for(int i=0;i<arr.length;i++){
+                    while(arr[i].startsWith("\n")){
+                        arr[i]=arr[i].substring(1);
+                    }
+                    if(arr[i].endsWith("--")){
+                        arr[i]=arr[i].substring(0,arr[i].length()-2);
+                    }
+                    if(arr[i].contains("Content-Type:")){
+                        int end;
+                        if(arr[i].contains(";")){
+                            end=Math.min(arr[i].indexOf(';'),arr[i].indexOf('\n'));
+                        }else{
+                            end=arr[i].indexOf('\n');
+                        }
+                        contenttype[i]=arr[i].substring(arr[i].indexOf("Content-Type:")+13,end);
+
+                    }
+
+                    if(arr[i].contains("Content-Transfer-Encoding:")){
+                        String sub=arr[i].substring(arr[i].indexOf("Content-Transfer-Encoding:"));
+                        encodingtype[i]=arr[i].substring(arr[i].indexOf("Content-Transfer-Encoding:")+26,sub.indexOf('\n')+arr[i].indexOf("Content-Transfer-Encoding:"));
+                    }
+                    if(contenttype[i]!=null){
+                         if(contenttype[i].contains("image")){
+                            String image="";
+                            if(arr[i].contains("Content-Disposition")){
+                                int start=arr[i].substring(arr[i].indexOf("Content-Disposition")).indexOf("\n")+arr[i].indexOf("Content-Disposition");
+                                image=arr[i].substring(start);
+                            }else{
+                                int start=arr[i].substring(arr[i].indexOf("Content-Type")).indexOf("\n")+arr[i].indexOf("Content-Type");
+                                image=arr[i].substring(start);
+                            }
+
+                            if(image.endsWith("--")){
+                                image=image.substring(0,image.length()-2);
+                            }
+                            while(image.startsWith("\n")){
+                                image=image.substring(1);
+                            }
+                            Image_Map.put(index,image);
+                        }else if(contenttype[i].contains("application")){
+                            String application="";
+                            if(arr[i].contains("Content-Disposition")){
+                                int start=arr[i].substring(arr[i].indexOf("Content-Disposition")).indexOf("\n")+arr[i].indexOf("Content-Disposition");
+                                application=arr[i].substring(start);
+                            }else{
+                                int start=arr[i].substring(arr[i].indexOf("Content-Type")).indexOf("\n")+arr[i].indexOf("Content-Type");
+                                application=arr[i].substring(start);
+                            }
+
+                            if(application.endsWith("--")){
+                                application=application.substring(0,application.length()-2);
+                            }
+                            while(application.startsWith("\n")){
+                                application=application.substring(1);
+                            }
+                            Application_Map.put(index,application);
+                        }
+                    }
+
+                }
+                plain_body="";
+            }else{
+                if(contentType_Map.get(index).contains("image")){
+                    Image_Map.put(index,plain_body);
+                }else if(contentType_Map.get(index).contains("application")){
+                    Application_Map.put(index,plain_body);
+                }else {
+                    plain_Map.put(index,plain_body);
+                }
+                plain_body="";
+            }
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return this;
+    }
     //获取全部
     public IMAP getallheader(){
 
@@ -554,7 +613,7 @@ public class IMAP {
     }
 
     //单独获取某一封
-    public IMAP getone(int index){
+    public IMAP getplain(int index){
         list();
         getList();
 
@@ -562,7 +621,7 @@ public class IMAP {
         select("INBOX");
         get_select_response();
         fetchHEADER_Boundary(index);
-        fetchHEADER_Text(index);
+        fetchplain(index);
 
         return this;
     }

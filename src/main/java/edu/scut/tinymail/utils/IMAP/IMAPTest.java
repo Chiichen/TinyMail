@@ -32,7 +32,7 @@ public class IMAPTest {
              //   建立Socket连接到IMAP服务器的端口143（明文）
                 //获取全部邮件
                 imap.Initialize(serverName, serverPort).
-                        login(username, password).getallheader().getone(24);
+                        login(username, password).getallheader().getplain(2).getAttachment(2);
                 //获取某一封邮件的主题，发件人，收件人，时间，正文，html文本，图片八进制字节流，附件八进制字节流
 //                    imap.getSubject_Map().get(index);
 //                    imap.getFrom_Map().get(index);
