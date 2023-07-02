@@ -1,6 +1,5 @@
 package edu.scut.tinymail.utils.MIME;
 
-import edu.scut.tinymail.exception.MailException;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -9,18 +8,21 @@ import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Base64;
 
 @Data
 public class MIME {
 
     @Test
-    public void test() throws IOException, MailException.SMTPException {
+    public void test() throws IOException {
 
         MIME mime = new MIME();
-        mime.Initialize("smtp.qq.com", 25, "qq.com", "2530221402@qq.com", "aaievxjsnpavebdi")
-                .sendInfo("2530221402@qq.com", "13712922800@163.com")//2900807385@qq.com
-                .sendDataStart("2530221402@qq.com", "13712922800@163.com", "Test")
+        mime.Initialize("smtp.qq.com",25,"qq.com","2530221402@qq.com","aaievxjsnpavebdi")
+                .sendInfo("2530221402@qq.com","2530221402@qq.com")//2900807385@qq.com
+                .sendDataStart("2530221402@qq.com","2530221402@qq.com","Test")
                 .sendContent("""
                         先帝创业未半而中道崩殂，今天下三分，益州疲弊，此诚危急存亡之秋也。然侍卫之臣不懈于内，忠志之士忘身于外者，盖追先帝之殊遇，欲报之于陛下也。诚宜开张圣听，以光先帝遗德，恢弘志士之气，不宜妄自菲薄，引喻失义，以塞忠谏之路也。
                         宫中府中，俱为一体，陟罚臧否，不宜异同。若有作奸犯科及为忠善者，宜付有司论其刑赏，以昭陛下平明之理，不宜偏私，使内外异法也。
@@ -34,8 +36,8 @@ public class MIME {
 //                .sendAttachment("test.jpg","D:\\test.jpg").sendAttachment("test.txt","D:\\test.txt")
 //                .sendAttachment("test.rar","D:\\test.rar").sendAttachment("test.doc","D:\\test.doc")
 //                .sendAttachment("test.pdf","D:\\test.pdf").sendAttachment("test.xls","D:\\test.xls")
-                .sendAttachment("test.jpg",Files.readAllBytes(Paths.get("D:\\test.jpg")))
-                .sendAttachment("test.rar",Files.readAllBytes(Paths.get("D:\\test.rar")))
+                .sendAttachment("忠志之士忘身于外者盖追先帝之殊遇欲报之于陛下也。诚宜开张圣听以塞忠谏之路也.jpg",Files.readAllBytes(Paths.get("D:\\test.jpg")))
+                .sendAttachment("忠志之士忘身于外者盖追先帝之殊遇欲报之于陛下也 诚宜开张圣听以光先帝遗德.rar",Files.readAllBytes(Paths.get("D:\\test.rar")))
                 .sendAttachment("test.doc",Files.readAllBytes(Paths.get("D:\\test.doc")))
                 .sendAttachment("test.xls",Files.readAllBytes(Paths.get("D:\\test.xls")))
                 .sendAttachment("test.pdf",Files.readAllBytes(Paths.get("D:\\test.pdf")))
@@ -71,7 +73,7 @@ public class MIME {
     String MIME_TYPE = "";
 
     //MIME初始化接口
-    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException, MailException.SMTPException {
+    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException {
         //参数初始化
         setSMTP_SERVER(server);
         setSMTP_PORT(port);
@@ -84,14 +86,13 @@ public class MIME {
         setReader(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         setWriter(new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
 
+        // 读取服务器响应
         System.out.println(reader.readLine());
-
 
         // 发送SMTP命令
         sendCommand(writer, "HELO " + DOMAIN_NAME);
         System.out.println(reader.readLine());
-        System.out.println(reader.readLine());
-        System.out.println(reader.readLine());
+
         // 发送身份验证命令
         sendCommand(writer, "AUTH LOGIN");
         System.out.println(reader.readLine());
@@ -103,16 +104,13 @@ public class MIME {
         // 发送密码
         sendCommand(writer, base64Encode(this.PASSWORD));
         System.out.println(reader.readLine());
-        // 读取服务器响应
-
         return this;
     }
 
-    public MIME sendInfo(String sender, String receiver) throws IOException, MailException.SMTPException {
+    public MIME sendInfo(String sender, String receiver) throws IOException {
         // 发送发件人信息
         sendCommand(writer, "MAIL FROM: <" + sender + ">");
-        String responseString = reader.readLine();
-        if (!responseString.contains("OK")) throw new MailException.SMTPException("发件人地址有误，请检查邮箱有效性");
+        System.out.println(reader.readLine());
 
         // 发送收件人信息
         sendCommand(writer, "RCPT TO: <" + receiver + ">");
@@ -121,6 +119,7 @@ public class MIME {
     }
 
     public MIME sendDataStart(String sender, String receiver, String subject) throws IOException {
+
         // 开始邮件内容
         sendCommand(writer, "DATA");
         System.out.println(reader.readLine());
@@ -130,11 +129,19 @@ public class MIME {
         sendCommand(writer,"To: " + receiver);
         sendCommand(writer,"Subject: " + subject);
         sendCommand(writer,"MIME-Version: 1.0");
+        sendCommand(writer,"Date: " + getFormatted());
         sendCommand(writer,"Content-Transfer-Encoding: base64");
         sendCommand(writer,"Content-Type: multipart/mixed; boundary=boundary");
         sendCommand(writer,"");
 
        return this;
+    }
+
+    private static String getFormatted() {
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.of("+8"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("EEE, d MMM yyyy HH:mm:ss Z '('z')'");
+        String formatted = now.format(formatter);
+        return formatted;
     }
 
     // 发送邮件正文
@@ -150,8 +157,8 @@ public class MIME {
         // 发送附件
         sendCommand(writer, "--boundary");
         sendCommand(writer,"Content-Type: application/octet-stream");
-        sendCommand(writer,"Content-Transfer-Encoding: base64");
         sendCommand(writer,"Content-Disposition: attachment;filename=\"" + filename + "\"");
+        sendCommand(writer,"Content-Transfer-Encoding: base64");
         writer.println();
 
         // 读取附件内容并进行Base64编码后发送
@@ -159,7 +166,6 @@ public class MIME {
         //byte[] attachmentBytes = Files.readAllBytes(attachmentPath);
         String base64EncodedAttachment = Base64.getEncoder().encodeToString(attachmentBytes);
         sendCommand(writer, base64EncodedAttachment);
-
         return this;
     }
 
@@ -193,7 +199,7 @@ public class MIME {
             System.out.println(response);
 
             // 发送SMTP命令
-            sendCommand(writer, "HELO qq.com");//
+            sendCommand(writer, "HELO");//
             response = reader.readLine();
             System.out.println(response);
 
@@ -246,6 +252,7 @@ public class MIME {
             sendCommand(writer, "--boundary");
             writer.println("Content-Type: application/octet-stream");
             writer.println("Content-Transfer-Encoding: base64");
+
             writer.println("Content-Disposition: attachment; " +
                     "filename=\"" + this.ATTACHMENT_FILENAME + "\"");//attachment OR inline
             writer.println();
@@ -262,9 +269,9 @@ public class MIME {
             setATTACHMENT_FILENAME("test.txt");
             sendCommand(writer, "--boundary");
             writer.println("Content-Type: application/octet-stream");
-            writer.println("Content-Transfer-Encoding: base64");
             writer.println("Content-Disposition: attachment; " +
                     "filename=\"" + this.ATTACHMENT_FILENAME + "\"");//attachment OR inline
+            writer.println("Content-Transfer-Encoding: base64");
             writer.println();
 
             // 读取附件内容并进行Base64编码后发送
@@ -293,25 +300,6 @@ public class MIME {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
-    }
-
-
-    public MIME initialize() {
-        return this;
-    }
-
-    public MIME seninfo() {
-        return this;
-    }
-
-    public MIME sendmail() {
-        return this;
-    }
-
-    public MIME sendattachment() {
-        return this;
     }
 
     private static void sendCommand(PrintWriter writer, String command) {
