@@ -1,5 +1,6 @@
 package edu.scut.tinymail.utils.MIME;
 
+import edu.scut.tinymail.exception.MailException;
 import lombok.Data;
 import org.junit.jupiter.api.Test;
 
@@ -17,7 +18,7 @@ import java.util.Base64;
 public class MIME {
 
     @Test
-    public void test() throws IOException {
+    public void test() throws IOException, MailException.SMTPException {
 
         MIME mime = new MIME();
         mime.Initialize("smtp.qq.com",25,"qq.com","2530221402@qq.com","aaievxjsnpavebdi")
@@ -73,7 +74,7 @@ public class MIME {
     String MIME_TYPE = "";
 
     //MIME初始化接口
-    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException {
+    public MIME Initialize(String server, int port, String domain, String username, String psw) throws IOException, MailException.SMTPException {
         //参数初始化
         setSMTP_SERVER(server);
         setSMTP_PORT(port);
@@ -87,11 +88,22 @@ public class MIME {
         setWriter(new PrintWriter(new OutputStreamWriter(socket.getOutputStream())));
 
         // 读取服务器响应
-        System.out.println(reader.readLine());
+        String response0 = reader.readLine();
+        System.out.println(response0);
+
 
         // 发送SMTP命令
         sendCommand(writer, "HELO " + DOMAIN_NAME);
-        System.out.println(reader.readLine());
+        String response1 = reader.readLine();
+        System.out.println(response1);
+        String response2 = reader.readLine();
+        System.out.println(response2);
+        String response3 = reader.readLine();
+        System.out.println(response3);
+        if (!response1.startsWith("250")||!response2.startsWith("250")||!response3.startsWith("250")){
+            throw new MailException.SMTPException("Fail to connect SMTP server.");
+        }
+
 
         // 发送身份验证命令
         sendCommand(writer, "AUTH LOGIN");
@@ -103,7 +115,11 @@ public class MIME {
 
         // 发送密码
         sendCommand(writer, base64Encode(this.PASSWORD));
-        System.out.println(reader.readLine());
+        String response4 = reader.readLine();
+        System.out.println(response4);
+        if (!response4.startsWith("235")){
+            throw new MailException.SMTPException("Authentication failed");
+        }
         return this;
     }
 
@@ -168,7 +184,7 @@ public class MIME {
         return this;
     }
 
-    public MIME sendDataEnd() throws IOException {
+    public MIME sendDataEnd() throws IOException, MailException.SMTPException {
         // 结束邮件内容
         writer.println();
         writer.println("--boundary--");
@@ -178,7 +194,11 @@ public class MIME {
 
         // 结束会话
         sendCommand(writer, "QUIT");
-        System.out.println(reader.readLine());
+        String response = reader.readLine();
+        System.out.println(response);
+        if (!response.startsWith("221")){
+            throw new MailException.SMTPException("Fail to close connection");
+        }
 
         // 关闭连接
         socket.close();
