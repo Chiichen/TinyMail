@@ -5,10 +5,7 @@ import io.swagger.models.auth.In;
 import javax.swing.plaf.metal.MetalBorders;
 import javax.swing.text.html.HTML;
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.rmi.UnexpectedException;
@@ -19,6 +16,7 @@ import java.util.Base64;
 
 public class IMAP {
 
+    private  Socket socket=new Socket();
     private int serialnumber =1;
     private BufferedReader in;
     private PrintWriter out;
@@ -52,11 +50,11 @@ public class IMAP {
     private HashMap<Integer,String> HTML_Map=new HashMap<>();
     private HashMap<Integer,String> Image_Map=new HashMap<>();
 
-    private HashMap<Integer,String> Application_Map=new HashMap<>();
+    private HashMap<Integer,String[]> Application_Map=new HashMap<>();
 
     public  IMAP Initialize(String serverName,String serverPort){
         try{
-            Socket socket=new Socket(serverName,Integer.parseInt(serverPort));
+            socket=new Socket(serverName,Integer.parseInt(serverPort));
             in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out=new PrintWriter(socket.getOutputStream(),true);
             get_isInitialize();
@@ -197,7 +195,7 @@ public class IMAP {
         return Image_Map;
     }
 
-    public HashMap<Integer, String> getApplication_Map() {
+    public HashMap<Integer, String[]> getApplication_Map() {
         return Application_Map;
     }
 
@@ -392,6 +390,7 @@ public class IMAP {
                String[] arr=plain_body.split(boundary_Map.get(index));
                String[] contenttype=new String[arr.length];
                String[] encodingtype=new String[arr.length];
+               String charset="";
                for(int i=0;i<arr.length;i++){
                    while(arr[i].startsWith("\n")){
                        arr[i]=arr[i].substring(1);
@@ -448,6 +447,10 @@ public class IMAP {
                            }
                            plain_Map.put(index,plain);
                        }else if(contenttype[i].contains("html")){
+                           if(arr[i].contains("charset")){
+                               String sub=arr[i].substring(arr[i].indexOf("charset"));
+                               charset=arr[i].substring(arr[i].indexOf("charset")+8,sub.indexOf('\n')+arr[i].indexOf("charset"));
+                           }
                            String html="";
                            if(encodingtype[i].toLowerCase().contains("quoted-printable")){
                                html=QuotedPrintableDecoder.decodeQuotedPrintable(arr[i]);
@@ -457,7 +460,12 @@ public class IMAP {
                                    arr[i]=arr[i].substring(0,arr[i].length()-2);
                                String str=(arr[i].substring(arr[i].indexOf("base64") + 6));
                                str=str.replace("\n","");
-                               html=Base64Decoder.decodeBase64(str);
+                               if(charset.contains("gb18030")){
+                                   //使用字符集gb18030解码
+                               }else{
+                                   html=Base64Decoder.decodeBase64(str);
+                               }
+
                            }else if(encodingtype[i].toLowerCase().contains("8bit")){
                                if(arr[i].endsWith("--"))
                                    arr[i]=arr[i].substring(0,arr[i].length()-2);
@@ -569,7 +577,7 @@ public class IMAP {
                             while(application.startsWith("\n")){
                                 application=application.substring(1);
                             }
-                            Application_Map.put(index,application);
+                            Application_Map.put(index,new String[]{application});
                         }
                     }
 
@@ -577,9 +585,9 @@ public class IMAP {
                 plain_body="";
             }else{
                 if(contentType_Map.get(index).contains("image")){
-                    Image_Map.put(index,plain_body);
+                    Application_Map.put(index,new String[]{plain_body});;
                 }else if(contentType_Map.get(index).contains("application")){
-                    Application_Map.put(index,plain_body);
+                    Application_Map.put(index,new String[]{plain_body});
                 }else {
                     plain_Map.put(index,plain_body);
                 }
@@ -626,6 +634,51 @@ public class IMAP {
         return this;
     }
 
+    public IMAP getAttachments(int index){
+        int num=2;
+        ArrayList<String>  attachments=new ArrayList<String>();
+        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
+        serialnumber++;
+        num++;
+        try{
 
+            response = in.readLine();
+            String peek=in.readLine();
+            while(!peek.contains(" NIL)")){
+                while(!plain_body.endsWith(")")){
+                    if(!response.startsWith("*")&&!response.contains("OK FETCH")){
+                        plain_body= plain_body +response;
+                    }
+                    if(peek.endsWith(")")){
+                        plain_body=plain_body+peek;
+                        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
+                        serialnumber++;
+                        num++;
+                        response = in.readLine();
+                        peek=in.readLine();
+                    }else{
+                        response=peek;
+                        peek = in.readLine();
+                    }
+                   ;
+
+                }
+                plain_body=plain_body.trim();
+                if(plain_body.endsWith(")")){
+                    plain_body=plain_body.substring(0,plain_body.length()-1);
+                }
+                attachments.add(plain_body);
+                plain_body="";
+
+            }
+            Application_Map.put(index,attachments.toArray(new String[attachments.size()]));
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return this;
+    }
 
 }
