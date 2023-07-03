@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -52,21 +53,21 @@ public class MailController {
     }
 
     @Operation(summary = "获取邮件简介")
-    @PostMapping("/api/mail/getinfo")
+    @GetMapping("/api/mail/getinfo")
     public ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException {
 
         return mailService.getMails(username, serverusername, pagenum);
     }
 
     @Operation(summary = "获取邮件")
-    @PostMapping("/api/mail/getdetail")
+    @GetMapping("/api/mail/getdetail")
     public ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
 
         return mailService.getMailDetail(username, serverusername, index);
     }
 
     @Operation(summary = "获取邮件附件")
-    @PostMapping("/api/mail/getAttachment")
+    @GetMapping("/api/mail/getAttachment")
     public ResponseResult<?> getMailAttachment(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
 
         return mailService.getAttachment(username, serverusername, index);

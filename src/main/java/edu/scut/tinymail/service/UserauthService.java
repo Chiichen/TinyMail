@@ -13,8 +13,10 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public interface UserauthService extends IService<Userauth> {
 
-     Userauth getByUsername(String username);
+    Userauth getByUsername(String username);
 
     ResponseResult<?> register(Userauth userauth, HttpServletRequest request);
+
+    ResponseResult<?> setNickname(String username, String newNickname);
 }
 

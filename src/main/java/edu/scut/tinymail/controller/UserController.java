@@ -53,10 +53,17 @@ public class UserController {
         );
     }
 
+    @Operation(summary = "修改指定用户的昵称")
+    @PostMapping("/api/user/setNickname")
+    public ResponseResult<?> setNickname(String username, String newNickname) {
+        if (userauthService.getByUsername(username) == null) return new ResponseResult<>(403, "该用户不存在");
+        return userauthService.setNickname(username, newNickname);
+    }
+
     @Operation(summary = "给指定用户添加配置信息")
     @PostMapping("/api/user/addsetting")
     public ResponseResult<?> addEmailSettings(Usersetting usersetting) {
-        if (userauthService.getByUsername(usersetting.getUsername()) == null)
+        if (userauthService.getById(usersetting.getUsername()) == null)
             return new ResponseResult<>(403, "该用户不存在");
         return usersettingService.addUserSetting(usersetting);
     }
@@ -64,7 +71,8 @@ public class UserController {
     @Operation(summary = "从用户名获取配置信息")
     @GetMapping("api/user/getsetting")
     public ResponseResult<?> getSettingByName(String username) {
-        if (userauthService.getByUsername(username) == null) return new ResponseResult<>(403, "该用户不存在");
+        if (userauthService.getById(username) == null)
+            return new ResponseResult<>(403, "该用户不存在");
         return usersettingService.getByName(username);
     }
 
@@ -82,5 +90,16 @@ public class UserController {
         return usersettingService.deleteSetting(username, serverusername);
     }
 
+    @Operation(summary = "获取昵称")
+    @GetMapping("api/user/getnickname")
+    public ResponseResult<?> getNickname(String username) {
+        Userauth userauth = userauthService.getById(username);
+        if (userauth != null) {
+            userauth.setPassword("");
+            return new ResponseResult<>(200, "ok", userauth);
+        } else {
+            return new ResponseResult<>(403, "不存在该用户");
+        }
 
+    }
 }

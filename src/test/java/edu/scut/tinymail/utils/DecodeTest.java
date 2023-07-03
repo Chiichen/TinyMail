@@ -18,8 +18,6 @@ public class DecodeTest {
                 " =?UTF-8?B?6ZqP5pe25YWz5rOo6K6i5Y2V54q25oCB77yB?=");
         Pattern pattern1 = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([bB])\\?)[^?]*(?=\\?=)");
         Matcher matcher1 = pattern1.matcher(str);
-
-
         str = "";
         int matchfirst = 0;
         while (matcher1.find(matchfirst)) {

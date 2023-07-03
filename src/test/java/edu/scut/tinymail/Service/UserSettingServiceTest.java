@@ -19,5 +19,6 @@ public class UserSettingServiceTest {
 //        System.out.println(usersettingService.getSmtpSetting("qihua", "asdf"));
 //        System.out.println(usersettingService.setUserSetting(new Usersetting("chi", "smtp.qq.com", "2531693734@qq.com", "mmvauqlcxnxbebdf", Usersetting.SMTP)));
 //        System.out.println(usersettingService.setUserSetting(new Usersetting("chii", "smtp.qq.com", "2531693734@qq.com", "mmvauqlcxnxbebdf", Usersetting.SMTP)));
+        System.out.println(usersettingService.getByName("chi"));
     }
 }
