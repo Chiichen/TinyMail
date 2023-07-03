@@ -27,9 +27,11 @@ public class MailServiceImpl implements MailService {
     @Override
     public ResponseResult<?> send(String username, String serverusername, Mail mail) throws IOException, MailException.SMTPException {
 
-        if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200)
+        if (usersettingService.getSmtpSetting(username, serverusername).getCode() != 200) {
+            System.out.println(username);
+            System.out.println(serverusername);
             return usersettingService.getSmtpSetting(username, serverusername);
-        else {
+        } else {
             Usersetting setting = usersettingService.getSmtpSetting(username, serverusername).getData();
             MIME mime = new MIME();
             mime.Initialize(setting.getServername(), 25, setting.getDomain(), setting.getServerusername(), setting.getServerpassword())
@@ -103,7 +105,10 @@ public class MailServiceImpl implements MailService {
             }
             Collections.reverse(mailList);
             System.out.println(mailList.size());
-            return new ResponseResult<>(200, "ok", mailList);
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("maillist", mailList);
+            map.put("num", imap.getNumOfEmail());
+            return new ResponseResult<>(200, "ok", map);
         }
     }
     /**

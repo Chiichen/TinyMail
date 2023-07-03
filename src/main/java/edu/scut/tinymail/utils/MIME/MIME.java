@@ -101,7 +101,7 @@ public class MIME {
         String response3 = reader.readLine();
         System.out.println(response3);
         if (!response1.startsWith("250")||!response2.startsWith("250")||!response3.startsWith("250")){
-            throw new MailException.SMTPException("Fail to connect SMTP server.");
+            throw new MailException.SMTPException("未能连接到SMTP服务器");
         }
 
 
@@ -118,7 +118,7 @@ public class MIME {
         String response4 = reader.readLine();
         System.out.println(response4);
         if (!response4.startsWith("235")){
-            throw new MailException.SMTPException("Authentication failed");
+            throw new MailException.SMTPException("邮箱登陆失败");
         }
         return this;
     }
@@ -197,7 +197,7 @@ public class MIME {
         String response = reader.readLine();
         System.out.println(response);
         if (!response.startsWith("221")){
-            throw new MailException.SMTPException("Fail to close connection");
+            throw new MailException.SMTPException("发送失败");
         }
 
         // 关闭连接

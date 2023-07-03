@@ -13,7 +13,6 @@ public interface MailService {
 
     ResponseResult<?> send(String username, String serverusername, Mail mail) throws IOException, MailException.SMTPException;
 
-
     ResponseResult<?> attachedSend(String username, String serverusername, Mail mail, MultipartFile[] files) throws IOException, MailException.SMTPException;
 
     ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException;
