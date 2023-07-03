@@ -155,7 +155,7 @@ public class MIME {
     public MIME sendAttachment(String filename, byte[] attachmentBytes) throws IOException {
         // 发送附件
         sendCommand(writer, "--boundary");
-        sendCommand(writer,"Content-Type: application/octet-stream");
+        sendCommand(writer,"Content-Type: application/octet-stream; charset=UTF-8");
         sendCommand(writer,"Content-Disposition: attachment;filename=\"" + filename + "\"");
         sendCommand(writer,"Content-Transfer-Encoding: base64");
         writer.println();

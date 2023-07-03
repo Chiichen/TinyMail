@@ -12,7 +12,7 @@ public class FileUtil {
     public static byte[] trans(String base64File){
         return Base64.getDecoder().decode(base64File);
     }
-    public static void createFile(byte[] file,byte[] filepath) throws IOException {
+    public static void createFile(byte[] file,byte[] filepath,String filename) throws IOException {
         String filePath = new String(filepath);
         File dir = new File(filePath);
         // 检查放置文件的文件夹路径是否存在，不存在则创建
