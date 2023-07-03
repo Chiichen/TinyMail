@@ -6,15 +6,16 @@ import edu.scut.tinymail.domain.entity.Usersetting;
 import edu.scut.tinymail.exception.MailException;
 import edu.scut.tinymail.service.MailService;
 import edu.scut.tinymail.service.UsersettingService;
-import edu.scut.tinymail.utils.IMAP.Base64Decoder;
 import edu.scut.tinymail.utils.IMAP.IMAP;
 import edu.scut.tinymail.utils.MIME.MIME;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 
 @Service
@@ -105,7 +106,6 @@ public class MailServiceImpl implements MailService {
             return new ResponseResult<>(200, "ok", mailList);
         }
     }
-
     /**
      * @param username
      * @param serverusername
@@ -114,7 +114,6 @@ public class MailServiceImpl implements MailService {
      */
     @Override
     public ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
-
         if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
             return usersettingService.getImapSetting(username, serverusername);
         else {
@@ -158,10 +157,10 @@ public class MailServiceImpl implements MailService {
      * @return
      */
     @Override
-    public ResponseResult<?> getAttachment(String username, String serverusername, int index, int attindex) throws IOException {
+    public void getAttachment(String username, String serverusername, int index, int attindex, HttpServletResponse response) throws IOException {
 
         if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
-            return usersettingService.getImapSetting(username, serverusername);
+            response.sendError(403, usersettingService.getImapSetting(username, serverusername).getMsg());
         else {
             Usersetting setting = usersettingService.getImapSetting(username, serverusername).getData();
             String serverPort = "143";
@@ -171,15 +170,15 @@ public class MailServiceImpl implements MailService {
             imap.Initialize(setting.getServername(), serverPort).
                     login(setting.getServerusername(), setting.getServerpassword()).getAttName(index).getAttachment(index, attindex);
             index = imap.getNumOfEmail() - index + 1;
-            System.out.println(imap.getApplication_Map().get(index));
             //获取某一封邮件的主题，发件人，收件人，时间，正文，html文本，图片八进制字节流，附件八进制字节流
-            byte[] bytes = Base64Decoder.decodeBase64Printable(imap.getApplication_Map().get(index).get(0)).getBytes();
-            MultipartFile file = new MockMultipartFile(imap.getAttchmentNameMap().get(index).get(attindex), bytes);
-            System.out.println(file.getOriginalFilename());
-//            File file1 = new File("D:/");
-//            file.transferTo(file1);
-            return new ResponseResult<>(200, "ok", null);
+//            byte[] bytes = Base64Decoder.decodeBase64Printable(imap.getApplication_Map().get(index).get(0)).getBytes();
+            byte[] bytes = Base64.getDecoder().decode(imap.getApplication_Map().get(index).get(0));
+            response.setContentType("application/octet-stream");
+            response.addHeader(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + URLEncoder.encode(imap.getAttchmentNameMap().get(index).get(attindex), "UTF-8"));
+            response.setContentLength(bytes.length);
+            response.getOutputStream().write(bytes);
+            response.getOutputStream().flush();
+            response.getOutputStream().close();
         }
     }
-
 }

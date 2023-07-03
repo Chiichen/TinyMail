@@ -7,9 +7,9 @@ import edu.scut.tinymail.service.MailService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,7 +21,7 @@ import java.io.IOException;
 @RestController
 public class MailController {
 
-    @Resource
+    @Autowired
     MailService mailService;
 
     @Operation(summary = "邮件发送接口(不含附件)")
@@ -68,9 +68,9 @@ public class MailController {
 
     @Operation(summary = "获取邮件附件")
     @GetMapping("/api/mail/getAttachment")
-    public ResponseResult<?> getMailAttachment(String username, String serverusername, int index, int attindex) throws IOException, MailException.IMAPException {
+    public void getMailAttachment(String username, String serverusername, int index, int attindex, HttpServletResponse response) throws IOException, MailException.IMAPException {
 
-        return mailService.getAttachment(username, serverusername, index, attindex);
+        mailService.getAttachment(username, serverusername, index, attindex, response);
     }
 
 

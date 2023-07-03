@@ -3,6 +3,7 @@ package edu.scut.tinymail.service;
 import edu.scut.tinymail.domain.ResponseResult;
 import edu.scut.tinymail.domain.entity.Mail;
 import edu.scut.tinymail.exception.MailException;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -20,5 +21,5 @@ public interface MailService {
     ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException;
 
 
-    ResponseResult<?> getAttachment(String username, String serverusername, int index, int attindex) throws IOException;
+    void getAttachment(String username, String serverusername, int index, int attindex, HttpServletResponse response) throws IOException;
 }
