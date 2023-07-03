@@ -6,15 +6,16 @@ import edu.scut.tinymail.domain.entity.Usersetting;
 import edu.scut.tinymail.exception.MailException;
 import edu.scut.tinymail.service.MailService;
 import edu.scut.tinymail.service.UsersettingService;
+import edu.scut.tinymail.utils.IMAP.Base64Decoder;
 import edu.scut.tinymail.utils.IMAP.IMAP;
 import edu.scut.tinymail.utils.MIME.MIME;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class MailServiceImpl implements MailService {
@@ -71,9 +72,6 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException {
-
-        System.out.println("username:" + username);
-        System.out.println("serverusername:" + serverusername);
         if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
             return usersettingService.getImapSetting(username, serverusername);
         else {
@@ -102,6 +100,7 @@ public class MailServiceImpl implements MailService {
                         imap.getTo_Map().get(index),
                         imap.getDate_Map().get(index)));
             }
+            Collections.reverse(mailList);
             System.out.println(mailList.size());
             return new ResponseResult<>(200, "ok", mailList);
         }
@@ -114,7 +113,7 @@ public class MailServiceImpl implements MailService {
      * @return
      */
     @Override
-    public ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException {
+    public ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
 
         if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
             return usersettingService.getImapSetting(username, serverusername);
@@ -124,8 +123,9 @@ public class MailServiceImpl implements MailService {
             IMAP imap = new IMAP();
             //   建立Socket连接到IMAP服务器的端口143（明文）
             imap.Initialize(setting.getServername(), serverPort).
-                    login(setting.getServerusername(), setting.getServerpassword()).getplain(index);
+                    login(setting.getServerusername(), setting.getServerpassword()).getplain(index).getAttName(index);
             Mail mail;
+            index = imap.getNumOfEmail() - index + 1;
             //获取某一封邮件的主题，发件人，收件人，时间，正文，html文本，图片八进制字节流，附件八进制字节流
             if (imap.getHTML_Map().get(index) != null) {
                 mail = new Mail(imap.getSubject_Map().get(index),
@@ -140,7 +140,12 @@ public class MailServiceImpl implements MailService {
                         imap.getTo_Map().get(index),
                         imap.getDate_Map().get(index));
             }
-            return new ResponseResult<>(200, "ok", mail);
+            List<String> attachName = imap.getAttchmentNameMap().get(index);
+            attachName = attachName.subList(1, attachName.size());
+            HashMap<String, Object> hashMap = new HashMap<>();
+            hashMap.put("mail", mail);
+            hashMap.put("attachname", attachName);
+            return new ResponseResult<>(200, "ok", hashMap);
             //Todo 现在只能接收一个附件，待完善
 
         }
@@ -153,7 +158,7 @@ public class MailServiceImpl implements MailService {
      * @return
      */
     @Override
-    public ResponseResult<?> getAttachment(String username, String serverusername, int index) {
+    public ResponseResult<?> getAttachment(String username, String serverusername, int index, int attindex) throws IOException {
 
         if (usersettingService.getImapSetting(username, serverusername).getCode() != 200)
             return usersettingService.getImapSetting(username, serverusername);
@@ -164,17 +169,15 @@ public class MailServiceImpl implements MailService {
             //   建立Socket连接到IMAP服务器的端口143（明文）
             //获取全部邮件
             imap.Initialize(setting.getServername(), serverPort).
-                    login(setting.getServerusername(), setting.getServerpassword()).getAttachment(index);
+                    login(setting.getServerusername(), setting.getServerpassword()).getAttName(index).getAttachment(index, attindex);
+            index = imap.getNumOfEmail() - index + 1;
+            System.out.println(imap.getApplication_Map().get(index));
             //获取某一封邮件的主题，发件人，收件人，时间，正文，html文本，图片八进制字节流，附件八进制字节流
-
-
-//            Mail mail = new Mail(imap.getSubject_Map().get(index),
-//                    imap.getPlain_Map().get(index),
-//                    imap.getFrom_Map().get(index),
-//                    imap.getTo_Map().get(index),
-//                    imap.getDate_Map().get(index));
-
-            //Todo 调用utils进行邮件附件发送
+            byte[] bytes = Base64Decoder.decodeBase64Printable(imap.getApplication_Map().get(index).get(0)).getBytes();
+            MultipartFile file = new MockMultipartFile(imap.getAttchmentNameMap().get(index).get(attindex), bytes);
+            System.out.println(file.getOriginalFilename());
+//            File file1 = new File("D:/");
+//            file.transferTo(file1);
             return new ResponseResult<>(200, "ok", null);
         }
     }

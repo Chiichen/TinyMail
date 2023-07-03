@@ -7,7 +7,6 @@ public class Eight_BitDecoder {
         String decodedContent=new String();
         try {
             decodedContent = new String(encodedContent.getBytes("UTF-8"), "UTF-8");
-            System.out.println(decodedContent);
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -60,8 +61,9 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserDetailsPa
      */
     @Override
     public UserDetails updatePassword(UserDetails user, String newPassword) {
-        final Userauth systemUser = systemUserService.getByUsername(user.getUsername());
-        systemUser.setPassword(newPassword);
+        Userauth systemUser = systemUserService.getByUsername(user.getUsername());
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        systemUser.setPassword(bCryptPasswordEncoder.encode(newPassword));
         systemUserService.updateById(systemUser);
         return User.withUsername(systemUser.getUsername())
                 .password(systemUser.getPassword())

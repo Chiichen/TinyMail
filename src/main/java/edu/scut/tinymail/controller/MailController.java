@@ -68,9 +68,9 @@ public class MailController {
 
     @Operation(summary = "获取邮件附件")
     @GetMapping("/api/mail/getAttachment")
-    public ResponseResult<?> getMailAttachment(String username, String serverusername, int index) throws IOException, MailException.IMAPException {
+    public ResponseResult<?> getMailAttachment(String username, String serverusername, int index, int attindex) throws IOException, MailException.IMAPException {
 
-        return mailService.getAttachment(username, serverusername, index);
+        return mailService.getAttachment(username, serverusername, index, attindex);
     }
 
 

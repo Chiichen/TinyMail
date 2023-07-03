@@ -17,8 +17,8 @@ public interface MailService {
 
     ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException;
 
-    ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException;
+    ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException, MailException.IMAPException;
 
 
-    ResponseResult<?> getAttachment(String username, String serverusername, int index);
+    ResponseResult<?> getAttachment(String username, String serverusername, int index, int attindex) throws IOException;
 }

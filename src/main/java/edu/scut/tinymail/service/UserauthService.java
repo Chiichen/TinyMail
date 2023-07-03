@@ -18,5 +18,6 @@ public interface UserauthService extends IService<Userauth> {
     ResponseResult<?> register(Userauth userauth, HttpServletRequest request);
 
     ResponseResult<?> setNickname(String username, String newNickname);
+
 }
 

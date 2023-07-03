@@ -19,9 +19,7 @@ public class Base64Decoder {
 
                 if(((i+1)%4)==0){
                     index[count++]=i;
-
                 }
-
             }
             String decodedText="";
             for(int i=0;i<count;i++){
@@ -42,8 +40,6 @@ public class Base64Decoder {
                             length++;
                         }
                     }
-
-
                 }
                 byte[] bytes = Base64.getDecoder().decode(encodeText);
                 Charset charset = StandardCharsets.UTF_8;
@@ -52,6 +48,9 @@ public class Base64Decoder {
                 }
                 if ("GBK".equalsIgnoreCase(charsetName)) {
                     charset = Charset.forName("GB2312");
+                }
+                if ("gb18030".equalsIgnoreCase(charsetName)) {
+                    charset = Charset.forName("gb18030");
                 }
                 decodedText = decodedText + new String(bytes, charset);
 
