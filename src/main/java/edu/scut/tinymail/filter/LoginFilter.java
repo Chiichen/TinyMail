@@ -46,7 +46,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-
         if (!HttpMethod.POST.name().equalsIgnoreCase(request.getMethod())) {
             throw new AuthenticationServiceException("Authentication method not supported: " + request.getMethod());
         }

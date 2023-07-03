@@ -95,7 +95,7 @@ public class SecurityConfig {
         //设置数据源
         tokenRepository.setDataSource(datasource);
         //第一次启动的时候建表
-//        tokenRepository.setCreateTableOnStartup(true);
+        //tokenRepository.setCreateTableOnStartup(true);
         return tokenRepository;
     }
 

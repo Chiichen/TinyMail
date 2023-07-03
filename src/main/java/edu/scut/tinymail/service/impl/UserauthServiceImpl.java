@@ -30,6 +30,9 @@ public class UserauthServiceImpl extends ServiceImpl<UserauthMapper, Userauth> i
     @Autowired
     private RedisCache redisCache;
 
+    @Autowired
+    private UserauthMapper userauthMapper;
+
     @Override
     public Userauth getByUsername(String username) {
         QueryWrapper<Userauth> queryWrapper = new QueryWrapper<>();
@@ -42,22 +45,35 @@ public class UserauthServiceImpl extends ServiceImpl<UserauthMapper, Userauth> i
     public ResponseResult<?> register(Userauth userauth, HttpServletRequest request) {
         if (!userauth.getVc().equals(request.getSession().getAttribute(VERIFY_CODE_KEY)))
             return new ResponseResult<>(401, "验证码错误");
-
-        UserauthMapper userauthMapper = getBaseMapper();
         QueryWrapper<Userauth> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("username", userauth.getUsername());
 
         if (userauthMapper.selectOne(queryWrapper) != null) return new ResponseResult<>(401, "用户名已存在");
         else {
             BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-            userauthMapper.insert(new Userauth(null,
+            userauthMapper.insert(new Userauth(
                     userauth.getUsername(),
                     userauth.getNickname(),
                     bCryptPasswordEncoder.encode(userauth.getPassword()),
+                    null,
                     Collections.singletonList("user")));
             return new ResponseResult<>(200, "成功注册");
         }
 
+    }
+
+    /**
+     * @param username
+     * @param newNickname
+     * @return
+     */
+    @Override
+    public ResponseResult<?> setNickname(String username, String newNickname) {
+        if (getByUsername(username) == null) return new ResponseResult<>(403, "该用户不存在");
+        Userauth userauth = userauthMapper.selectById(username);
+        userauth.setNickname(newNickname);
+        userauthMapper.updateById(userauth);
+        return new ResponseResult<>(200, "ok", newNickname);
     }
 
 

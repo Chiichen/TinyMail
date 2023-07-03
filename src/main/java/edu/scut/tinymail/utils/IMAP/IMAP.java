@@ -1,22 +1,23 @@
 package edu.scut.tinymail.utils.IMAP;
 
-import io.swagger.models.auth.In;
+import edu.scut.tinymail.exception.MailException;
 
-import javax.swing.plaf.metal.MetalBorders;
-import javax.swing.text.html.HTML;
-import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
-import java.rmi.UnexpectedException;
+import java.net.URLDecoder;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Base64;
+import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class IMAP {
 
-    private  Socket socket=new Socket();
     private int serialnumber =1;
     private BufferedReader in;
     private PrintWriter out;
@@ -50,11 +51,11 @@ public class IMAP {
     private HashMap<Integer,String> HTML_Map=new HashMap<>();
     private HashMap<Integer,String> Image_Map=new HashMap<>();
 
-    private HashMap<Integer,String[]> Application_Map=new HashMap<>();
+    private HashMap<Integer,String> Application_Map=new HashMap<>();
 
     public  IMAP Initialize(String serverName,String serverPort){
         try{
-            socket=new Socket(serverName,Integer.parseInt(serverPort));
+            Socket socket=new Socket(serverName,Integer.parseInt(serverPort));
             in=new BufferedReader(new InputStreamReader(socket.getInputStream()));
             out=new PrintWriter(socket.getOutputStream(),true);
             get_isInitialize();
@@ -64,9 +65,8 @@ public class IMAP {
         }catch (Exception e){
             e.printStackTrace();
         }
-
+        System.out.println("Initialized Imap Connect");
         return this;
-
     }
 
     public boolean get_isInitialize()throws InitializeException {
@@ -195,7 +195,7 @@ public class IMAP {
         return Image_Map;
     }
 
-    public HashMap<Integer, String[]> getApplication_Map() {
+    public HashMap<Integer, String> getApplication_Map() {
         return Application_Map;
     }
 
@@ -234,8 +234,10 @@ public class IMAP {
                 }
                 response = in.readLine();
             }
-            if(from.toLowerCase().contains("utf-8")){
-                from=Base64Decoder.decodeBase64Printable(from);
+            if (from.toLowerCase().contains("utf-8?b")) {
+                from = Base64Decoder.decodeBase64Printable(from);
+            } else if (from.toLowerCase().contains("utf-8?q")) {
+                from = QuotedPrintableDecoder.decodeQuotedPrintable(from);
             }
             response=in.readLine();//处理a4 OK FETCH Completed
 //            from=Base64Decoder.decodeBase64Printable(from);
@@ -348,24 +350,25 @@ public class IMAP {
                         int end;
                         if(response.substring(response.toLowerCase().indexOf("boundary=")).contains(";")){
                             end=response.indexOf("boundary=")+Math.min(response.substring(response.toLowerCase().indexOf("boundary=")).indexOf("\n"),response.substring(response.toLowerCase().indexOf("boundary=")).indexOf(";"));
-                        }else {
-                            end=response.indexOf("boundary=")+response.substring(response.toLowerCase().indexOf("boundary=")).indexOf("\n");
+                        } else {
+                            end = response.indexOf("boundary=") + response.substring(response.toLowerCase().indexOf("boundary=")).indexOf("\n");
                         }
 
-                        boundary=response.substring(response.toLowerCase().indexOf("boundary=")+9,end).replaceAll("\"","");
+                        boundary = response.substring(response.toLowerCase().indexOf("boundary=") + 9, end).replaceAll("\"", "");
                     }
                 }
 
                 response = in.readLine();
             }
-            boundary=boundary.replaceAll("\\\\","\\\\\\\\\\\\\\\\");
-            boundary=boundary.replaceAll("\\+","\\\\\\\\+");
-            boundary=boundary.replaceAll("\\*","\\\\\\\\*");
-            boundary=boundary.replaceAll("\\.","\\\\\\\\.");
+//            boundary=boundary.replaceAll("\\\\","\\\\\\\\\\\\\\\\");
+//            boundary=boundary.replaceAll("\\+","\\\\\\\\+");
+//            boundary=boundary.replaceAll("\\*","\\\\\\\\*");
+//            boundary=boundary.replaceAll("\\.","\\\\\\\\.");
+            boundary = boundary.replaceAll("[\\+\\*\\.]", "\\\\$0");
 
-            response=in.readLine();//处理a OK FETCH Completed
-            contentType_Map.put(index,contentType);
-            boundary_Map.put(index,boundary);
+            response = in.readLine();//处理a OK FETCH Completed
+            contentType_Map.put(index, contentType);
+            boundary_Map.put(index, boundary);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -390,7 +393,6 @@ public class IMAP {
                String[] arr=plain_body.split(boundary_Map.get(index));
                String[] contenttype=new String[arr.length];
                String[] encodingtype=new String[arr.length];
-               String charset="";
                for(int i=0;i<arr.length;i++){
                    while(arr[i].startsWith("\n")){
                        arr[i]=arr[i].substring(1);
@@ -400,12 +402,13 @@ public class IMAP {
                    }
                    if(arr[i].contains("Content-Type:")){
                        int end;
+                       String str = arr[i].substring(arr[i].indexOf("Content-Type"));
                        if(arr[i].contains(";")){
-                           end=Math.min(arr[i].indexOf(';'),arr[i].indexOf('\n'));
+                           end = Math.min(str.indexOf(';'), str.indexOf('\n'));
                        }else{
                            end=arr[i].indexOf('\n');
                        }
-                       contenttype[i]=arr[i].substring(arr[i].indexOf("Content-Type:")+13,end);
+                       contenttype[i] = arr[i].substring(str.indexOf("Content-Type:") + 13, end);
 
                    }
 
@@ -447,10 +450,6 @@ public class IMAP {
                            }
                            plain_Map.put(index,plain);
                        }else if(contenttype[i].contains("html")){
-                           if(arr[i].contains("charset")){
-                               String sub=arr[i].substring(arr[i].indexOf("charset"));
-                               charset=arr[i].substring(arr[i].indexOf("charset")+8,sub.indexOf('\n')+arr[i].indexOf("charset"));
-                           }
                            String html="";
                            if(encodingtype[i].toLowerCase().contains("quoted-printable")){
                                html=QuotedPrintableDecoder.decodeQuotedPrintable(arr[i]);
@@ -460,12 +459,7 @@ public class IMAP {
                                    arr[i]=arr[i].substring(0,arr[i].length()-2);
                                String str=(arr[i].substring(arr[i].indexOf("base64") + 6));
                                str=str.replace("\n","");
-                               if(charset.contains("gb18030")){
-                                   //使用字符集gb18030解码
-                               }else{
-                                   html=Base64Decoder.decodeBase64(str);
-                               }
-
+                               html=Base64Decoder.decodeBase64(str);
                            }else if(encodingtype[i].toLowerCase().contains("8bit")){
                                if(arr[i].endsWith("--"))
                                    arr[i]=arr[i].substring(0,arr[i].length()-2);
@@ -488,15 +482,22 @@ public class IMAP {
            }else{
                if(contentType_Map.get(index).contains("plain")){
                    plain_Map.put(index,plain_body);
-               }else if(contentType_Map.get(index).contains("html")){
-                   HTML_Map.put(index,Base64Decoder.decodeBase64Printable(plain_body));
+               }else if(contentType_Map.get(index).contains("html")) {
+                   //判断是不是base64编码的，是的话就解码，不是的话就不解码
+                   String inputStr = "Test Base64 string";
+                   String base64Pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+                   boolean isLegal = inputStr.matches(base64Pattern);
+                   if (!isLegal) {
+                       HTML_Map.put(index, plain_body);
+                   } else {
+                       HTML_Map.put(index, Base64Decoder.decodeBase64Printable(plain_body));
+                   }
+
                }else {
                    plain_Map.put(index,plain_body);
                }
                 plain_body="";
            }
-
-
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -577,7 +578,7 @@ public class IMAP {
                             while(application.startsWith("\n")){
                                 application=application.substring(1);
                             }
-                            Application_Map.put(index,new String[]{application});
+                            Application_Map.put(index,application);
                         }
                     }
 
@@ -585,100 +586,177 @@ public class IMAP {
                 plain_body="";
             }else{
                 if(contentType_Map.get(index).contains("image")){
-                    Application_Map.put(index,new String[]{plain_body});;
+                    Image_Map.put(index,plain_body);
                 }else if(contentType_Map.get(index).contains("application")){
-                    Application_Map.put(index,new String[]{plain_body});
+                    Application_Map.put(index,plain_body);
                 }else {
                     plain_Map.put(index,plain_body);
                 }
-                plain_body="";
+                plain_body = "";
             }
 
 
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return this;
     }
+
     //获取全部
-    public IMAP getallheader(){
-
-
-
+    public IMAP getallheader(int pagenum) throws IOException, MailException.IMAPException {
         list();
         getList();
-
-
         select("INBOX");
         get_select_response();
-        for(int i=1;i<=getNumOfEmail();i++){
-            fetchHEADER_From(i);
-            fetchHEADER_Subject(i);
-            fetchHEADER_Date(i);
-            fetchHEADER_To(i);
+//        for(int i=1;i<=getNumOfEmail();i++){
+//            System.out.println("index:"+i);
+//            fetchHEADER_From(i);
+//            fetchHEADER_Subject(i);
+//            fetchHEADER_Date(i);
+//            fetchHEADER_To(i);
+//        }
+        if (10 * pagenum - 10 > getNumOfEmail()) throw new MailException.IMAPException("超出邮件范围");
+        int lowerbound = 1, upperbound = 10;
+        if (10 * pagenum > getNumOfEmail()) {
+            lowerbound = 1;
+            upperbound = getNumOfEmail() % 10;
+        } else {
+            lowerbound = getNumOfEmail() - 10 * pagenum + 1;
+            upperbound = getNumOfEmail() - 10 * pagenum + 10;
         }
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + lowerbound + ":" + upperbound + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+        response = in.readLine();
+        int index = 1;
+        for (index = lowerbound; index <= upperbound; index++) {
+            while (!response.startsWith("a4 OK")) {
+                Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
+                Matcher matcher = pattern.matcher(response);
+                String peek = "";
+                if (response.contains("Subject:")) {
+                    response = response.replaceAll("(Subject: )", "");
+                    peek = in.readLine();
+                    while (peek.toLowerCase().contains("utf-8?")) {
+                        response += peek;
+                        peek = in.readLine();
+                    }
+                    DecodeResponse();
+                    getSubject_Map().put(index, response);
+                    response = peek;
+                }
+                if (matcher.find()) {
+                    index = Integer.parseInt(matcher.group(1));
+                }
+                if (response.contains("From: ")) {
+                    response = response.replaceAll("(From: )", "");
+                    DecodeResponse();
+                    getFrom_Map().put(index, response);
+                }
+                if (response.contains("To:")) {
+                    response = response.replaceAll("(To: )", "");
+                    DecodeResponse();
+                    getTo_Map().put(index, response);
+                }
+
+                if (response.contains("Date:")) {
+                    response = response.replaceAll("(Date: )", "");
+                    DecodeResponse();
+                    getDate_Map().put(index, response);
+                }
+                response = in.readLine();
+            }
+        }
+
         return this;
     }
 
+    private void DecodeResponse() {
+        if (response.toLowerCase().contains("utf-8?b")) {
+//            Pattern p = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([bB])\\?)[^?]*(?=\\?=)");
+//            Matcher m = p.matcher(response);
+//            response = "";
+//            int matchfirst = 0;
+//            while(m.find(matchfirst))
+//            {
+//                response += m.group();
+//                matchfirst = m.end();
+//            }
+            response = Base64Decoder.decodeBase64Printable(response);
+        } else if (response.toLowerCase().contains("utf-8?q")) {
+            Pattern p = Pattern.compile("(?<=\\?((UTF-8)|(utf-8))\\?([qQ])\\?)[^?]*(?=\\?=)");
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                response = m.group(0);
+            }
+            // =号转义为%，才能解码
+            response = response.replaceAll("=(..)", "%$1");
+            response = URLDecoder.decode(response, StandardCharsets.UTF_8);
+            //Todo 连续的两个编码过的字符串无法解析，待完善
+
+        } else if (response.contains("=?GBK")) {
+            //匹配base64编码的正文，并解码。
+            Pattern p = Pattern.compile("(?<=\\?GBK\\?B\\?)[^?]*(?=\\?=)");
+            Matcher m = p.matcher(response);
+            if (m.find()) {
+                response = m.group(0);
+            }
+            byte[] decodedBytes = Base64.getDecoder().decode(response);
+            response = new String(decodedBytes, Charset.forName("GB2312"));
+        }
+    }
+
     //单独获取某一封
-    public IMAP getplain(int index){
+    public IMAP getplain(int index) throws IOException {
         list();
         getList();
-
-
         select("INBOX");
         get_select_response();
         fetchHEADER_Boundary(index);
         fetchplain(index);
-
-        return this;
-    }
-
-    public IMAP getAttachments(int index){
-        int num=2;
-        ArrayList<String>  attachments=new ArrayList<String>();
-        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
-        serialnumber++;
-        num++;
-        try{
-
-            response = in.readLine();
-            String peek=in.readLine();
-            while(!peek.contains(" NIL)")){
-                while(!plain_body.endsWith(")")){
-                    if(!response.startsWith("*")&&!response.contains("OK FETCH")){
-                        plain_body= plain_body +response;
-                    }
-                    if(peek.endsWith(")")){
-                        plain_body=plain_body+peek;
-                        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
-                        serialnumber++;
-                        num++;
-                        response = in.readLine();
-                        peek=in.readLine();
-                    }else{
-                        response=peek;
-                        peek = in.readLine();
-                    }
-                   ;
-
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + index + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
+        response = in.readLine();
+        while (!response.startsWith("a6 OK")) {
+            Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
+            Matcher matcher = pattern.matcher(response);
+            String peek = "";
+            if (response.contains("Subject:")) {
+                response = response.replaceAll("(Subject: )", "");
+                peek = in.readLine();
+                while (peek.toLowerCase().contains("utf-8?")) {
+                    response += peek;
+                    peek = in.readLine();
                 }
-                plain_body=plain_body.trim();
-                if(plain_body.endsWith(")")){
-                    plain_body=plain_body.substring(0,plain_body.length()-1);
-                }
-                attachments.add(plain_body);
-                plain_body="";
-
+                DecodeResponse();
+                getSubject_Map().put(index, response);
+                response = peek;
             }
-            Application_Map.put(index,attachments.toArray(new String[attachments.size()]));
+            if (matcher.find()) {
+                index = Integer.parseInt(matcher.group(1));
+            }
+            if (response.contains("From: ")) {
+                response = response.replaceAll("(From: )", "");
+                DecodeResponse();
+                getFrom_Map().put(index, response);
+            }
+            if (response.contains("To:")) {
+                response = response.replaceAll("(To: )", "");
+                DecodeResponse();
+                getTo_Map().put(index, response);
+            }
 
+            if (response.contains("Date:")) {
+                response = response.replaceAll("(Date: )", "");
+                DecodeResponse();
+                getDate_Map().put(index, response);
+            }
+            System.out.println(response);
+            response = in.readLine();
 
-
-        }catch (Exception e){
-            e.printStackTrace();
         }
+
+
         return this;
     }
+
+
 
 }

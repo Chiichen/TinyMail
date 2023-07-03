@@ -15,5 +15,10 @@ public interface MailService {
 
     ResponseResult<?> attachedSend(String username, String serverusername, Mail mail, MultipartFile[] files) throws IOException, MailException.SMTPException;
 
-    ResponseResult<?> getMails(String username, String serverusername);
+    ResponseResult<?> getMails(String username, String serverusername, int pagenum) throws IOException, MailException.IMAPException;
+
+    ResponseResult<?> getMailDetail(String username, String serverusername, int index) throws IOException;
+
+
+    ResponseResult<?> getAttachment(String username, String serverusername, int index);
 }
