@@ -28,8 +28,9 @@
       </div>
 
       <div class="setContent">
-        <input :model="addmail" :placeholder='mailArr[select-1]' type="text" style="width:250px" size="large"
-               class="inputForm"/>
+<!--        <input :model="addmail" :placeholder='mailArr[select-1]' type="text" style="width:250px" size="large"-->
+<!--               class="inputForm"/>-->
+        <el-input size="medium"  v-model="addmail" class="inputForm" :placeholder='mailArr[select-1]'></el-input>
         <el-input size="medium" type="password" v-model="password" style="margin-top: -30px; width:200px" placeholder='邮箱密码/授权码'
                   show-password></el-input>
         <div class="tip">
@@ -38,8 +39,8 @@
 
         <div style="margin-top: 20px;margin-bottom:30px">
           <el-radio-group v-model="radio" size="large">
-            <el-radio-button label="SMTP"/>
             <el-radio-button label="IMAP"/>
+            <el-radio-button label="POP3"/>
             <el-radio-button label="其他"/>
           </el-radio-group>
         </div>
@@ -146,17 +147,22 @@ export default {
       console.log("添加账号")
       var formData = new FormData();
       console.log(this.radio)
+      console.log(this.addmail)
+      console.log(this.password)
 
-      if(this.radio=='SMTP'&&this.select==1){
-        formData.append("servername","smtp.qq.com")//smtp.qq.com
-        formData.append("type",0)//smtp 0 ||imap  1
-      }
-      var username = sessionStorage.getItem("username");
-      formData.append("username",username)
       //匹配邮箱地址
 
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      if (this.addmail.match(emailRegex)) {
+      if (emailRegex.test(this.addmail)) {
+
+
+        if(this.radio=='IMAP'&&this.select==1){
+          var temp='imap.'+this.addmail.match(/@[\w.]+/)[0].slice(1);
+          formData.append("servername",temp)//imap.qq.com
+          formData.append("type",1)//smtp 0 ||imap  1
+        }
+        var username = sessionStorage.getItem("username");
+        formData.append("username",username)
         console.log("邮箱地址格式正确");
         formData.append("serverusername",this.addmail)//邮箱地址
         formData.append("serverpassword",this.password)//
@@ -395,7 +401,7 @@ export default {
 .inputForm {
   border: none;
   outline: none;
-  border-bottom: 2px solid #484747;
+  /*border-bottom: 2px solid #484747;*/
   margin-bottom: 35px;
 }
 

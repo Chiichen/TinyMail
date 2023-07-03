@@ -87,11 +87,11 @@ import axios from "axios";
           var serverusername = sessionStorage.getItem("serverusername");
 
 
-          formData.append('serverusername',"3220497145@qq.com")
-          formData.append('username',"huaziya")
+          formData.append('serverusername',serverusername)
+          formData.append('username',username)
           formData.append('subject',this.textform.texttopic)
           formData.append('content',this.textform.textbody)
-          formData.append('fromAddress',"3220497145@qq.com")
+          formData.append('fromAddress',serverusername)
           formData.append('toAddress',this.textform.texttitle)
           // formData.append('files',this.fileList)
 

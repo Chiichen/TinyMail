@@ -223,10 +223,15 @@ export default {
         }).then(res=>{
           console.log(res)
           sessionStorage.setItem("username",this.loginForm.userName)
-          sessionStorage.setItem("token","")
+          //获取邮箱信息 并保存
+
+
+
+
+
+
           this.$router.push("/home")
           this.isLogin=false
-
         }).catch(res=>{
           console.log(res)
           //todo 提示错误

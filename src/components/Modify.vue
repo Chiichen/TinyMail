@@ -15,7 +15,7 @@
         <div class="message">
             <el-row :gutter="20">
     <el-col :span="2" :offset="1" class="firstSet"><div >昵称</div></el-col>
-    <el-col :span="3" :offset="1" class="firstShow">李绮华</el-col>
+    <el-col :span="3" :offset="1" class="firstShow">{{oldNickName}}</el-col>
     <el-col :span="2"><div><el-button text type="danger" size="larger" @click="modify_username">修改</el-button></div></el-col>
     <el-col :span="3" :offset="2" class="secondSet">联系电话<div ></div></el-col>
     <el-col :span="7" :offset="2" class="secondShow"><div >12345678901</div></el-col>
@@ -37,14 +37,14 @@
                 <span style="font-size: 30px;color: rgb(0, 0, 0);padding-left: 30%;">修改昵称</span>
             </div>
             <div style="padding-left: 10%;">
-                
+
                 <input v-model="MODusername" placeholder="请输入修改后的昵称" type="text" style="width:300px;font-size: 30px;" size="larger" class="inputForm"/>
             </div>
             <el-form-item class="ButtonUS" >
             <el-button type="primary" @click="MODusernameOK"  > 确认</el-button>
             <el-button type="success" @click="cancel" style="margin-left: 60px;" > 取消</el-button>
           </el-form-item>
-            
+
         </div>
     </div>
 
@@ -86,6 +86,7 @@ export default{
     data () {
         return {
             select:0,
+            oldNickName:"",
             MODusername:'',
             modifyForm:{
                 originalPW:'',
@@ -117,26 +118,62 @@ export default{
         ],
         },
         }
-        
+
     },
-    methods: {
+  created() {
+      var nickname = sessionStorage.getItem('nickname');this.oldNickName=nickname
+
+  },
+  methods: {
         modify_username(){
             this.select=1;
         },
         modify_password(){
             this.select=2;
         },
-        
+
 
         cancel(){
             this.select=0;
         },
         MODusernameOK(){
-
+            console.log(this.MODusername)
+            var formData = new FormData();
+            formData.append("username",sessionStorage.getItem('username'))
+            formData.append("newNickname",this.MODusername)
+            axios({
+              method: 'post',
+              url: '/api/api/user/setNickname',
+              data:formData
+            }).then(res=>{
+              console.log(res)
+              sessionStorage.setItem('nickname',this.MODusername)
+              this.oldNickName=this.MODusername;
+            }).catch(res=>{
+              console.log(res)
+            })
             this.select=0;
         },
         MODpasswordOK(){
-
+          console.log(this.modifyForm)
+          if(this.modifyForm.newPWA!==this.modifyForm.newPWB){
+            //提示密码两个密码冲突
+          }
+          else{
+            //修改密码
+            var formData = new FormData();
+            formData.append("username",sessionStorage.getItem('username'))
+            formData.append("newpassword",this.modifyForm.newPWA)
+            axios({
+              method: 'post',
+              url: '/api/api/user/updatePassword',
+              data:formData
+            }).then(res=>{
+              console.log(res)
+            }).catch(res=>{
+              console.log(res)
+            })
+          }
             this.select=0;
         },
     },
@@ -146,13 +183,13 @@ export default{
 <style scoped>
 
 .container{
-    
+
 }
 
 .title{
     display: flex;
     justify-content: start;
-    
+
 }
 
 .divider{
@@ -164,7 +201,7 @@ export default{
 
 .message{
     font-family: '宋体';
-    
+
 }
 
 .firstSet{
@@ -202,7 +239,7 @@ export default{
   left: 25px;
   background:-webkit-linear-gradient(top,lightblue,rgb(240, 210, 210));
   border-radius: 5%;
-    
+
 }
 
 .inputForm {
@@ -214,7 +251,7 @@ export default{
 .ButtonUS{
     padding-left: 20%;
     padding-top: 70px;
-    
+
 }
 
 .passwordMain{
