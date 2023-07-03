@@ -588,7 +588,7 @@ public class IMAP {
         response = in.readLine();
         int index = 1;
         for (index = lowerbound; index <= upperbound; index++) {
-            while (!response.startsWith("a4 OK")) {
+            while (!response.contains("OK FETCH Completed")) {
                 Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
                 Matcher matcher = pattern.matcher(response);
                 String peek = "";
