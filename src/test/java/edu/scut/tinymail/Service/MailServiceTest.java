@@ -26,7 +26,7 @@ public class MailServiceTest {
         // System.out.println(mailService.getMails("taq","1405522135@qq.com"));
         // System.out.println(mailService.getMails("chi","2531693734@qq.com"));
         //System.out.println(mailService.getMails("chi", "2531693734@qq.com", 1));
-        System.out.println(mailService.getMailDetail("chi", "2531693734@qq.com", 19));
+        System.out.println(mailService.getMailDetail("chi", "2531693734@qq.com", 16));
         //System.out.println(mailService.getAttachment("chi", "2531693734@qq.com", 1, 1));
         //System.out.println(mailService.getAttachment("chi", "2531693734@qq.com", 1, 2));
     }

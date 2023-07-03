@@ -73,7 +73,6 @@ public class MailController {
         mailService.getAttachment(username, serverusername, index, attindex, response);
     }
 
-
     @Operation(summary = "给前端的永真接口")
     @PostMapping("/api/ok")
     public ResponseResult<?> okForever(HttpServletRequest request, HttpServletResponse response) {

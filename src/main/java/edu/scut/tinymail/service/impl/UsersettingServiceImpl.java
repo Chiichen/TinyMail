@@ -38,7 +38,8 @@ public class UsersettingServiceImpl extends ServiceImpl<UsersettingMapper, Users
             queryWrapper.and(
                     wrapper -> wrapper
                             .eq("username", usersetting.getUsername())
-                            .eq("serverusername", usersetting.getServerusername()));
+                            .eq("serverusername", usersetting.getServerusername())
+                            .eq("servername", usersetting.getServername()));
 
             if (!usersettingMapper.selectList(queryWrapper).isEmpty())
                 return new ResponseResult<>(403, "这个邮箱已经添加过了");

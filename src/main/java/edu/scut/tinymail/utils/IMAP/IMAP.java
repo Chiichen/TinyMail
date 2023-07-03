@@ -50,7 +50,7 @@ public class IMAP {
     private HashMap<Integer, String> plain_Map = new HashMap<>();
     private HashMap<Integer, String> HTML_Map = new HashMap<>();
     private HashMap<Integer, String> Image_Map = new HashMap<>();
-
+    private HashMap<Integer, HashMap<Integer, String>> encodeType = new HashMap<>();
     private HashMap<Integer, List<String>> Application_Map = new HashMap<>();
 
     private HashMap<Integer, List<String>> attchmentNameMap = new HashMap<>();
@@ -295,7 +295,6 @@ public class IMAP {
         String contentType = "";
         String boundary = "";
         try {
-
             response = in.readLine();
             while (!response.startsWith(")")) {
                 if (!response.startsWith("*")) {
@@ -319,11 +318,7 @@ public class IMAP {
 
                 response = in.readLine();
             }
-//            boundary=boundary.replaceAll("\\\\","\\\\\\\\\\\\\\\\");
-//            boundary=boundary.replaceAll("\\+","\\\\\\\\+");
-//            boundary=boundary.replaceAll("\\*","\\\\\\\\*");
-//            boundary=boundary.replaceAll("\\.","\\\\\\\\.");
-            boundary = boundary.replaceAll("[\\+\\*\\.]", "\\\\$0");
+            //boundary = boundary.replaceAll("[\\+\\*\\.]", "\\\\$0");
 
             response = in.readLine();//处理a OK FETCH Completed
             contentType_Map.put(index, contentType);
@@ -334,9 +329,10 @@ public class IMAP {
         return this;
     }
 
+
     public IMAP fetchplain(int index) {
 
-        out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY.PEEK[1]");
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY[TEXT]");
         serialnumber++;
         try {
 
@@ -351,7 +347,7 @@ public class IMAP {
             String peek = in.readLine();
             while (!plain_body.endsWith(")")) {
                 if (!response.startsWith("*") && !response.contains("OK FETCH")) {
-                    plain_body = plain_body + response;
+                    plain_body = plain_body + response + "\n";
                 }
                 if (peek.endsWith(")")) {
                     plain_body = plain_body + peek;
@@ -361,7 +357,8 @@ public class IMAP {
                     peek = in.readLine();
                 }
             }
-
+            System.out.println(plain_body);
+            plain_body = plain_body.substring(0, plain_body.length() - 1);
             response = in.readLine();//处理a OK FETCH Completed
             if (boundary_Map.get(index) != "") {
                 String[] arr = plain_body.split(boundary_Map.get(index));
@@ -385,7 +382,6 @@ public class IMAP {
                         contenttype[i] = arr[i].substring(str.indexOf("Content-Type:") + 13, end);
 
                     }
-
                     if (arr[i].contains("Content-Transfer-Encoding:")) {
                         String sub = arr[i].substring(arr[i].indexOf("Content-Transfer-Encoding:"));
                         encodingtype[i] = arr[i].substring(arr[i].indexOf("Content-Transfer-Encoding:") + 26, sub.indexOf('\n') + arr[i].indexOf("Content-Transfer-Encoding:"));
@@ -454,20 +450,22 @@ public class IMAP {
                 }
                 plain_body = "";
             } else {
+                System.out.println("else:" + plain_body);
                 if (contentType_Map.get(index).contains("plain")) {
+                    System.out.println("put into plain map:" + plain_body);
                     plain_Map.put(index, plain_body);
                 } else if (contentType_Map.get(index).contains("html")) {
+                    System.out.println("put into html map:" + plain_body);
                     //判断是不是base64编码的，是的话就解码，不是的话就不解码
-                    String inputStr = "Test Base64 string";
                     String base64Pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
-                    boolean isLegal = inputStr.matches(base64Pattern);
+                    boolean isLegal = plain_body.matches(base64Pattern);
                     if (!isLegal) {
                         HTML_Map.put(index, plain_body);
                     } else {
                         HTML_Map.put(index, Base64Decoder.decodeBase64Printable(plain_body));
                     }
-
                 } else {
+                    System.out.println("put into html map:" + plain_body);
                     plain_Map.put(index, plain_body);
                 }
                 plain_body = "";
