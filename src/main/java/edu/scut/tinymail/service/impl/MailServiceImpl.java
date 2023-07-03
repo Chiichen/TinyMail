@@ -145,13 +145,18 @@ public class MailServiceImpl implements MailService {
                         imap.getDate_Map().get(index));
             }
             List<String> attachName = imap.getAttchmentNameMap().get(index);
-            attachName = attachName.subList(1, attachName.size());
-            HashMap<String, Object> hashMap = new HashMap<>();
-            hashMap.put("mail", mail);
-            hashMap.put("attachname", attachName);
-            return new ResponseResult<>(200, "ok", hashMap);
-            //Todo 现在只能接收一个附件，待完善
 
+            HashMap<String, Object> hashMap = new HashMap<>();
+            if (attachName == null) {
+                hashMap.put("attachname", null);
+                hashMap.put("mail", mail);
+                return new ResponseResult<>(200, "ok", hashMap);
+            } else {
+                attachName = attachName.subList(1, attachName.size());
+                hashMap.put("attachname", attachName);
+                hashMap.put("mail", mail);
+                return new ResponseResult<>(200, "ok", hashMap);
+            }
         }
     }
 

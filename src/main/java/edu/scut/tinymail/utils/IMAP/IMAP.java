@@ -340,14 +340,28 @@ public class IMAP {
         serialnumber++;
         try {
 
+//            response = in.readLine();
+//            while (!plain_body.endsWith(")")) {
+//                if (!response.startsWith("*")) {
+//                    plain_body = plain_body + response ;
+//                }
+//                response = in.readLine();
+//            }
             response = in.readLine();
-            while (!response.startsWith(")")) {
-                if (!response.startsWith("*")) {
-                    plain_body = plain_body + response + "\n";
+            String peek = in.readLine();
+            while (!plain_body.endsWith(")")) {
+                if (!response.startsWith("*") && !response.contains("OK FETCH")) {
+                    plain_body = plain_body + response;
                 }
+                if (peek.endsWith(")")) {
+                    plain_body = plain_body + peek;
 
-                response = in.readLine();
+                } else {
+                    response = peek;
+                    peek = in.readLine();
+                }
             }
+
             response = in.readLine();//处理a OK FETCH Completed
             if (boundary_Map.get(index) != "") {
                 String[] arr = plain_body.split(boundary_Map.get(index));
@@ -378,37 +392,37 @@ public class IMAP {
                     }
                     if (contenttype[i] != null) {
                         if (contenttype[i].contains("plain")) {
-                            String plain = "";
+
                             if (encodingtype[i].toLowerCase().contains("quoted-printable")) {
                                 String qt = arr[i].substring(arr[i].indexOf("quoted-printable") + 16);
                                 while (qt.startsWith("\n")) {
                                     qt = qt.substring(1);
                                 }
-                                plain = QuotedPrintableDecoder.decodeQuotedPrintable(qt);
-                                if (plain.contains("-printable")) {
-                                    plain = plain.substring(plain.indexOf("-printable") + 10);
+                                plain_body = QuotedPrintableDecoder.decodeQuotedPrintable(qt);
+                                if (plain_body.contains("-printable")) {
+                                    plain_body = plain_body.substring(plain_body.indexOf("-printable") + 10);
                                 }
                             } else if (encodingtype[i].toLowerCase().contains("base64")) {
                                 if (arr[i].endsWith("--"))
                                     arr[i] = arr[i].substring(0, arr[i].length() - 2);
                                 String str = (arr[i].substring(arr[i].indexOf("base64") + 6));
                                 str = str.replace("\n", "");
-                                plain = Base64Decoder.decodeBase64(str);
+                                plain_body = Base64Decoder.decodeBase64(str);
 
                             } else if (encodingtype[i].toLowerCase().contains("8bit")) {
                                 if (arr[i].endsWith("--"))
                                     arr[i] = arr[i].substring(0, arr[i].length() - 2);
                                 String str = (arr[i].substring(arr[i].indexOf("8bit") + 4));
                                 str = str.replace("\n", "");
-                                plain = Eight_BitDecoder.decoder(str);
+                                plain_body = Eight_BitDecoder.decoder(str);
                             }
-                            while (plain.startsWith("\n")) {
-                                plain = plain.substring(plain.indexOf("\n") + 1);
+                            while (plain_body.startsWith("\n")) {
+                                plain_body = plain_body.substring(plain_body.indexOf("\n") + 1);
                             }
-                            if (plain.endsWith("--")) {
-                                plain = plain.substring(0, plain.length() - 2);
+                            if (plain_body.endsWith("--")) {
+                                plain_body = plain_body.substring(0, plain_body.length() - 2);
                             }
-                            plain_Map.put(index, plain);
+                            plain_Map.put(index, plain_body);
                         } else if (contenttype[i].contains("html")) {
                             String html = "";
                             if (encodingtype[i].toLowerCase().contains("quoted-printable")) {
@@ -676,7 +690,7 @@ public class IMAP {
         fetchplain(index);
         out.println("a" + String.valueOf(serialnumber) + " FETCH " + index + " (BODY[HEADER.FIELDS (FROM TO SUBJECT DATE)])");
         response = in.readLine();
-        while (!response.startsWith("a6 OK")) {
+        while (!response.contains("OK FETCH Completed")) {
             Pattern pattern = Pattern.compile("\\*\\s(\\d+)\\sFETCH");
             Matcher matcher = pattern.matcher(response);
             String peek = "";
@@ -770,15 +784,20 @@ public class IMAP {
         ArrayList<String> attName = new ArrayList<String>();
         try {
             response = in.readLine();
-            // 解析结构信息，提取附件名称
-            String[] fetchResponseLines = response.split("\"filename\"");
-            for (String line : fetchResponseLines) {
-                line = line.substring(line.indexOf("\"") + 1);
-                line = line.substring(0, line.indexOf("\""));
-                if (line.toLowerCase().contains("?b?")) line = Base64Decoder.decodeBase64Printable(line);
-                attName.add(line);
+            if (!response.contains("attachment")) {
+                return this;
+            } else {
+                // 解析结构信息，提取附件名称
+                String[] fetchResponseLines = response.split("\"filename\"");
+                for (String line : fetchResponseLines) {
+                    line = line.substring(line.indexOf("\"") + 1);
+                    line = line.substring(0, line.indexOf("\""));
+                    if (line.toLowerCase().contains("?b?")) line = Base64Decoder.decodeBase64Printable(line);
+                    attName.add(line);
+                }
+                attchmentNameMap.put(index, List.of(attName.toArray(new String[attName.size()])));
             }
-            attchmentNameMap.put(index, List.of(attName.toArray(new String[attName.size()])));
+
 
         } catch (Exception e) {
             e.printStackTrace();
