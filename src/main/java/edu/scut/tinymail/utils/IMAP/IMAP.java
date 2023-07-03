@@ -51,7 +51,7 @@ public class IMAP {
     private HashMap<Integer,String> HTML_Map=new HashMap<>();
     private HashMap<Integer,String> Image_Map=new HashMap<>();
 
-    private HashMap<Integer,String> Application_Map=new HashMap<>();
+    private HashMap<Integer,String[]> Application_Map=new HashMap<>();
 
     public  IMAP Initialize(String serverName,String serverPort){
         try{
@@ -195,7 +195,7 @@ public class IMAP {
         return Image_Map;
     }
 
-    public HashMap<Integer, String> getApplication_Map() {
+    public HashMap<Integer, String[]> getApplication_Map() {
         return Application_Map;
     }
 
@@ -578,7 +578,7 @@ public class IMAP {
                             while(application.startsWith("\n")){
                                 application=application.substring(1);
                             }
-                            Application_Map.put(index,application);
+                            Application_Map.put(index,new String[]{application});
                         }
                     }
 
@@ -588,7 +588,7 @@ public class IMAP {
                 if(contentType_Map.get(index).contains("image")){
                     Image_Map.put(index,plain_body);
                 }else if(contentType_Map.get(index).contains("application")){
-                    Application_Map.put(index,plain_body);
+                    Application_Map.put(index,new String[]{plain_body});
                 }else {
                     plain_Map.put(index,plain_body);
                 }
@@ -758,5 +758,51 @@ public class IMAP {
     }
 
 
+    public IMAP getAttachments(int index){
+        int num=2;
+        ArrayList<String>  attachments=new ArrayList<String>();
+        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
+        serialnumber++;
+        num++;
+        try{
+
+            response = in.readLine();
+            String peek=in.readLine();
+            while(!peek.contains(" NIL)")){
+                while(!plain_body.endsWith(")")){
+                    if(!response.startsWith("*")&&!response.contains("OK FETCH")){
+                        plain_body= plain_body +response;
+                    }
+                    if(peek.endsWith(")")){
+                        plain_body=plain_body+peek;
+                        out.println("a"+String.valueOf(serialnumber)+" FETCH "+String.valueOf(index)+" BODY.PEEK["+String.valueOf(num)+"]");
+                        serialnumber++;
+                        num++;
+                        response = in.readLine();
+                        peek=in.readLine();
+                    }else{
+                        response=peek;
+                        peek = in.readLine();
+                    }
+                   ;
+
+                }
+                plain_body=plain_body.trim();
+                if(plain_body.endsWith(")")){
+                    plain_body=plain_body.substring(0,plain_body.length()-1);
+                }
+                attachments.add(plain_body);
+                plain_body="";
+
+            }
+            Application_Map.put(index,attachments.toArray(new String[attachments.size()]));
+
+
+
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return this;
+    }
 
 }
