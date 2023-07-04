@@ -332,7 +332,24 @@ public class IMAP {
 
     public IMAP fetchplain(int index) {
 
-        out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY[TEXT]");
+        out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY.PEEK[1.1]");
+        FetchPlainResponse(index);
+        if (getPlain_Map().get(index) == null && getHTML_Map().get(index) == null) {
+
+            out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY.PEEK[1]");
+            FetchPlainResponse(index);
+            if (getPlain_Map().get(index) == null && getHTML_Map().get(index) == null) {
+
+                out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY[TEXT]]");
+                FetchPlainResponse(index);
+                return this;
+            }
+            return this;
+        }
+        return this;
+    }
+
+    private void FetchPlainResponse(int index) {
         serialnumber++;
         try {
 
@@ -356,12 +373,34 @@ public class IMAP {
                     response = peek;
                     peek = in.readLine();
                 }
+
             }
             System.out.println(plain_body);
             plain_body = plain_body.substring(0, plain_body.length() - 1);
             response = in.readLine();//处理a OK FETCH Completed
             if (boundary_Map.get(index) != "") {
                 String[] arr = plain_body.split(boundary_Map.get(index));
+                if (arr.length == 1) {
+                    plain_body = plain_body.replaceAll("\\\n", "");
+                    //判断是不是base64编码的，是的话就解码，不是的话就不解码
+                    String base64Pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+                    boolean isLegal = plain_body.matches(base64Pattern);
+                    if (isLegal) plain_body = Base64Decoder.decodeBase64Printable(plain_body);
+                    else {
+                        plain_body = plain_body.replaceAll("=([0-9A-Fa-f]{2})", "%$1");
+                        plain_body = URLDecoder.decode(plain_body, StandardCharsets.UTF_8);
+                    }
+                    if (contentType_Map.get(index).contains("plain")) {
+                        plain_Map.put(index, plain_body);
+                    } else if (contentType_Map.get(index).contains("html")) {
+
+                        HTML_Map.put(index, plain_body);
+                    } else {
+                        plain_Map.put(index, plain_body);
+                    }
+                    plain_body = "";
+                    return;
+                }
                 String[] contenttype = new String[arr.length];
                 String[] encodingtype = new String[arr.length];
                 for (int i = 0; i < arr.length; i++) {
@@ -450,22 +489,22 @@ public class IMAP {
                 }
                 plain_body = "";
             } else {
-                System.out.println("else:" + plain_body);
+                plain_body = plain_body.replaceAll("\\\n", "");
+                //判断是不是base64编码的，是的话就解码，不是的话就不解码
+                String base64Pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
+                boolean isLegal = plain_body.matches(base64Pattern);
+                if (isLegal) plain_body = Base64Decoder.decodeBase64Printable(plain_body);
+                else {
+                    plain_body = plain_body.replaceAll("=([0-9A-Fa-f]{2})", "%$1");
+                    plain_body = URLDecoder.decode(plain_body, StandardCharsets.UTF_8);
+                }
+
                 if (contentType_Map.get(index).contains("plain")) {
-                    System.out.println("put into plain map:" + plain_body);
                     plain_Map.put(index, plain_body);
                 } else if (contentType_Map.get(index).contains("html")) {
-                    System.out.println("put into html map:" + plain_body);
-                    //判断是不是base64编码的，是的话就解码，不是的话就不解码
-                    String base64Pattern = "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$";
-                    boolean isLegal = plain_body.matches(base64Pattern);
-                    if (!isLegal) {
-                        HTML_Map.put(index, plain_body);
-                    } else {
-                        HTML_Map.put(index, Base64Decoder.decodeBase64Printable(plain_body));
-                    }
+
+                    HTML_Map.put(index, plain_body);
                 } else {
-                    System.out.println("put into html map:" + plain_body);
                     plain_Map.put(index, plain_body);
                 }
                 plain_body = "";
@@ -473,8 +512,8 @@ public class IMAP {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return this;
     }
+
 
     public IMAP getAttachment(int index) {
         out.println("a" + String.valueOf(serialnumber) + " FETCH " + String.valueOf(index) + " BODY[TEXT]");
@@ -751,7 +790,6 @@ public class IMAP {
                     response = peek;
                     peek = in.readLine();
                 }
-                ;
 
             }
             plain_body = plain_body.trim();
@@ -795,8 +833,6 @@ public class IMAP {
                 }
                 attchmentNameMap.put(index, List.of(attName.toArray(new String[attName.size()])));
             }
-
-
         } catch (Exception e) {
             e.printStackTrace();
         }
