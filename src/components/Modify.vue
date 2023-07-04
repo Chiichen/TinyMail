@@ -18,7 +18,7 @@
     <el-col :span="3" :offset="1" class="firstShow">{{oldNickName}}</el-col>
     <el-col :span="2"><div><el-button text type="danger" size="larger" @click="modify_username">修改</el-button></div></el-col>
     <el-col :span="3" :offset="2" class="secondSet">联系电话<div ></div></el-col>
-    <el-col :span="7" :offset="2" class="secondShow"><div >12345678901</div></el-col>
+    <el-col :span="7" :offset="2" class="secondShow"><div >暂无</div></el-col>
   </el-row>
   <div class="divider"></div>
   <el-row :gutter="20">
@@ -149,8 +149,22 @@ export default{
               console.log(res)
               sessionStorage.setItem('nickname',this.MODusername)
               this.oldNickName=this.MODusername;
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"提示",
+                tipDetail:"修改昵称成功",
+                type: 'success'
+              })
             }).catch(res=>{
               console.log(res)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"错误提示",
+                tipDetail:"服务器异常，昵称修改失败",
+                type: 'error'
+              })
             })
             this.select=0;
         },
@@ -170,8 +184,22 @@ export default{
               data:formData
             }).then(res=>{
               console.log(res)
+
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"提示",
+                tipDetail:"修改密码成功",
+                type: 'success'
+              })
             }).catch(res=>{
-              console.log(res)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"错误提示",
+                tipDetail:"服务器异常，密码修改失败",
+                type: 'error'
+              })
             })
           }
             this.select=0;

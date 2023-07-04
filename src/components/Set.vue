@@ -128,6 +128,7 @@
 <script>
 
 import axios from "axios";
+import {render} from "vue";
 
 export default {
   data() {
@@ -149,14 +150,23 @@ export default {
       console.log(this.radio)
       console.log(this.addmail)
       console.log(this.password)
+      if(this.radio===""||this.radio===undefined){
+        this.$tips({
+          // tip:res.response.data.msg,
+          // tipDetail:res.response.data.data,
+          tip:"错误",
+          tipDetail:'请选择邮箱协议',
+          type: 'error'
+        })
+        return
+      }
 
       //匹配邮箱地址
 
       const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
       if (emailRegex.test(this.addmail)) {
-
-
-        if(this.radio=='IMAP'&&this.select==1){
+        var smtpTemp='smtp.'+this.addmail.match(/@[\w.]+/)[0].slice(1)
+        if(this.radio=='IMAP'){
           var temp='imap.'+this.addmail.match(/@[\w.]+/)[0].slice(1);
           formData.append("servername",temp)//imap.qq.com
           formData.append("type",1)//smtp 0 ||imap  1
@@ -171,15 +181,64 @@ export default {
           url: '/api/api/user/addsetting',
           data:formData
         }).then(res=>{
-          console.log(res)
-
         }).catch(res=>{
           console.log(res)
-          //todo 提示错误
+          this.$tips({
+            tip:res.response.data.msg,
+            tipDetail:res.response.data.data,
+            type: 'error'
+          })
         })
-        this.$router.push("/home");
+
+        //添加smtp
+        formData.set("servername",smtpTemp)
+        formData.set("type",0)
+        axios({
+          method: 'post',
+          url: '/api/api/user/addsetting',
+          data:formData
+        }).then(res=>{
+          if(res.data.code!==200){
+            this.$tips({
+              tip:'错误提示',
+              tipDetail:res.data.msg,
+              type: 'error'
+            })
+          }else{
+            this.$tips({
+              // tip:res.response.data.msg,
+              // tipDetail:res.response.data.data,
+              tip:"提示",
+              tipDetail:"邮箱添加成功",
+              type: 'success'
+            })
+            setTimeout(() => {
+              this.$router.push("/home")
+            }, 2000)
+          }
+        }).catch(res=>{
+          console.log(res)
+          this.$tips({
+            tip:res.response.data.msg,
+            tipDetail:res.response.data.data,
+            type: 'error'
+          })
+        })
+
+
+
+
+
       } else {
         console.log("邮箱地址格式不正确");
+
+        this.$tips({
+          // tip:res.response.data.msg,
+          // tipDetail:res.response.data.data,
+          tip:'错误提示',
+          tipDetail:'邮箱地址格式不正确',
+          type: 'error'
+        })
 
       }
 

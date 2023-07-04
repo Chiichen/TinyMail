@@ -17,7 +17,7 @@
                  </el-form-item>
                  <!-- 正文内容的Html引入疑点 -->
                  <el-form-item label="正文内容:">
-                   <el-input  type="textarea" style="width:100%"  :rows="17" v-model="textform.textbody" @keydown.ctrl.enter="parseHtml">
+                   <el-input  type="textarea" style="width:100%"  :rows="11" v-model="textform.textbody" @keydown.ctrl.enter="parseHtml">
                   <div v-html="formattedHtml"></div>
                   </el-input>
                  </el-form-item>
@@ -39,11 +39,11 @@
                    <div class="el-upload__text">
                      Drop file here or <em>click to upload</em>
                    </div>
-                   <template #tip>
-                     <div class="el-upload__tip">
-                       jpg/png files with a size less than 500kb
-                     </div>
-                   </template>
+<!--                   <template #tip>-->
+<!--                     <div class="el-upload__tip">-->
+<!--                       jpg/png files with a size less than 500kb-->
+<!--                     </div>-->
+<!--                   </template>-->
                  </el-upload>
                </el-form>
              </el-main>
@@ -87,6 +87,39 @@ import axios from "axios";
           var serverusername = sessionStorage.getItem("serverusername");
 
 
+          //
+          const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+          if(this.textform.texttitle===""){
+            this.$tips({
+              // tip:res.response.data.msg,
+              // tipDetail:res.response.data.data,
+              tip:"错误提示",
+              tipDetail:"请输入收件人邮箱",
+              type: 'error'
+            })
+            return
+          }else if(!emailRegex.test(this.textform.texttitle)){
+            this.$tips({
+              // tip:res.response.data.msg,
+              // tipDetail:res.response.data.data,
+              tip:"错误提示",
+              tipDetail:"请输入正确的收件人邮箱",
+              type: 'error'
+            })
+            return;
+          }
+          if(this.textform.texttopic===""){
+            this.$tips({
+              // tip:res.response.data.msg,
+              // tipDetail:res.response.data.data,
+              tip:"错误提示",
+              tipDetail:"请输入邮件主题",
+              type: 'error'
+            })
+            return;
+          }
+
+
           formData.append('serverusername',serverusername)
           formData.append('username',username)
           formData.append('subject',this.textform.texttopic)
@@ -110,8 +143,22 @@ import axios from "axios";
               headers:{'Content-Type': 'multipart/form-data'}
             }).then(res=>{
               console.log(res)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"提示",
+                tipDetail:"邮件发送成功",
+                type: 'success'
+              })
             }).catch(res=>{
               console.log(res)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"错误提示",
+                tipDetail:"服务器异常，邮件发送失败",
+                type: 'error'
+              })
             })
           }else {
             axios({
@@ -125,8 +172,25 @@ import axios from "axios";
               // 'toAddress':this.textform.texttitle,
             }).then(res=>{
               console.log(res)
+              setTimeout(() => {
+                emitter.emit('back',true)
+              }, 2000)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"提示",
+                tipDetail:"邮件发送成功",
+                type: 'success'
+              })
             }).catch(res=>{
               console.log(res)
+              this.$tips({
+                // tip:res.response.data.msg,
+                // tipDetail:res.response.data.data,
+                tip:"错误提示",
+                tipDetail:"服务器异常，邮件发送失败",
+                type: 'error'
+              })
             })
           }
 

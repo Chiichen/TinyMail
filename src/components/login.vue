@@ -24,7 +24,7 @@
 
           <el-form-item  prop="REcode" label="验证码" >
             <el-input  type="text" v-model="registerForm.REcode"   style="width:100px"  autocomplete="false" ></el-input>
-            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
+            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg" class="img"></el-image>
           </el-form-item>
 
 
@@ -60,7 +60,7 @@
 
           <el-form-item  prop="code"  >
             <el-input  type="text" v-model="loginForm.code" placeholder="验证码"  style="width:100px"  autocomplete="false" clearable></el-input>
-            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg"></el-image>
+            <el-image :src="imageDataUrl" alt="JPEG 图片" @click="clickImg" class="img"></el-image>
           </el-form-item>
 
           <el-form-item  >
@@ -84,7 +84,7 @@
 </template>
 
 <script >
-import axios from 'axios'
+import axios from "axios";
 import mobileTip from "./mobileTip.vue";
 export default {
   name:"Login",
@@ -241,10 +241,8 @@ export default {
           // this.$GlobalDesc=res.response.data.data
            console.log(this)
           this.$tips({
-            // tip:res.response.data.msg,
-            // tipDetail:res.response.data.data,
-            tip:"登录失败",
-            tipDetail:"验证码不正确，请重新输入",
+            tip:res.response.data.msg,
+            tipDetail:res.response.data.data,
             type: 'error'
           })
         })
@@ -292,19 +290,56 @@ export default {
       formData.append("nickname",this.registerForm.setNickName)
       formData.append("password",this.registerForm.setPassWord)
       formData.append("vc",this.registerForm.REcode)
-      axios({
-        method: 'post',
-        url: '/api/api/user/register',
-        data:formData,
-      }).then(res=>{
-        console.log(res)
-        this.ACKLogin=true;
-      }).catch(res=>{
-        console.log(res)
-        //todo 提示错误
-        this.$GlobalErr=res.response.data.msg
-        this.$GlobalDesc=res.response.data.data
-      })
+      axios.post('/api/api/user/register', formData)
+          .then(res => {
+            console.log(res);
+            if(res.data.code!==200){
+                this.$tips({
+                  tip:'错误提示',
+                  tipDetail:res.data.msg,
+                  type: 'error'
+                })
+            }else{
+              this.ACKLogin = true;
+              this.$tips({
+                tip: '提示',
+                tipDetail: '注册成功',
+                type: 'success'
+              });
+            }
+
+          })
+          .catch(res => {
+              console.log(res)
+              this.$tips({
+                tip:"错误提示",
+                tipDetail:"网络错误",
+                type: 'error'
+              })
+          });
+      // axios({
+      //   method: 'post',
+      //   url: '/api/api/user/register',
+      //   data:formData,
+      // }).then(res=>{
+      //   console.log(res)
+      //   this.ACKLogin=true;
+      //   this.$tips({
+      //     // tip:res.response.data.msg,
+      //     // tipDetail:res.response.data.data,
+      //     tip:"提示",
+      //     tipDetail:"注册成功",
+      //     type: 'success'
+      //   })
+      //
+      // }).catch(res=>{
+      //   console.log(res)
+      //   this.$tips({
+      //     tip:res.response.data.msg,
+      //     tipDetail:res.response.data.data,
+      //     type: 'error'
+      //   })
+      // })
 
       /* 添加提交的部分 */
     },
@@ -325,7 +360,9 @@ export default {
 </script>d
 
 <style scoped >
-
+.img{
+  width:100px
+}
 .el-alert {
   margin: 20px 0 0;
 

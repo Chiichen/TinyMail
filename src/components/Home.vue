@@ -31,7 +31,7 @@
               </el-dropdown-item>
 
               <el-dropdown-item v-for="item in items" :key="item.id" divided @click="changeMail(item.email)">
-                <el-icon v-if="whichMail===item.email">
+                <el-icon v-if="whichMail===item.email" color="blue">
                   <Star/>
                 </el-icon>
                 <div style="text-align:center;color:black;font-size: 13px;font-family: '微软雅黑';">
@@ -118,7 +118,7 @@ export default {
       // {id:2,email:'ZIHUA@163.com'},
       items: [],
       NAME: '',
-      whichMail:'',
+      whichMail: '',
 
     }
 
@@ -126,14 +126,19 @@ export default {
   },
   methods: {
     back(isWelcome) {
-      console.log("回到默认界面", isWelcome)
       this.isWelcome = isWelcome
-      console.log(this.isWelcome)
     },
     changeMail(mail) {
       console.log(mail)
-      sessionStorage.setItem('serverusername',mail)
-      this.whichMail=mail
+      sessionStorage.setItem('serverusername', mail)
+      this.whichMail = mail
+      this.$tips({
+        // tip:res.response.data.msg,
+        // tipDetail:res.response.data.data,
+        tip: "提示：",
+        tipDetail: "切换成功",
+        type: 'success'
+      })
     },
     toRouter(route) {
       console.log(route)
@@ -181,7 +186,10 @@ export default {
     },
   },
   beforeCreate() {
-
+  },
+  created() {
+    // var username = sessionStorage.getItem("username");
+    console.log("每次进入都执行")
     var username = sessionStorage.getItem("username");
     this.NAME = username;
     console.log("获取用户设置", username)
@@ -195,16 +203,26 @@ export default {
       }
     }).then(res => {
       console.log(res)
+      //正则表达式匹配
+
       for (let i = 0; i < res.data.data.length; i++) {
-        var temp = {
-          id: i,
-          email: res.data.data[i].serverusername
+        console.log(res.data.data[i].servername.slice(0,4))
+        if(res.data.data[i].servername.slice(0,4)==='smtp'){
+          var temp = {
+            id: i,
+            email: res.data.data[i].serverusername
+          }
+          this.items.push(temp)
+          if(sessionStorage.getItem("serverusername")!==""||sessionStorage.getItem("serverusername")!==undefined){
+            this.whichMail = sessionStorage.getItem("serverusername")
+          }else {
+            sessionStorage.setItem('serverusername', res.data.data[i].serverusername)
+            this.whichMail = res.data.data[i].serverusername
+          }
+
+
         }
-        this.items.push(temp)
-        if (i === 0) {
-          sessionStorage.setItem('serverusername', res.data.data[i].serverusername)
-          this.whichMail=res.data.data[i].serverusername
-        }
+
       }
     }).catch(res => {
       console.log(res)
@@ -222,12 +240,6 @@ export default {
       sessionStorage.setItem('nickname', res.data.data.nickname)
       this.NAME = res.data.data.nickname;
     })
-
-
-  },
-  created() {
-    // var username = sessionStorage.getItem("username");
-
   },
   computed: {}
 };

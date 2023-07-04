@@ -26,7 +26,7 @@
     <!--    <iframe src="https://www.w3school.com.cn/jsref/dom_obj_frame.asp" style="height: 1000px"></iframe>-->
     <div v-html="htmlContent"></div>
     <el-pagination
-        v-model:current-page="currentPage4"
+        v-model:current-page="currentPage"
         page-size="10"
         background
         layout=" prev, pager, next, jumper,total"
@@ -59,48 +59,82 @@ export default {
       components: {
         email,
       },
-      currentPage4: 1,
+      currentPage: 1,
       pageTotal: 10,
 
       htmlContent: "<h1>Hello, World!</h1>"//显示html的1
     };
   },
   created() {
-    var formData = new FormData();
-    formData.append("username", sessionStorage.getItem('username'))
-    formData.append("serverusername", "3220497145@qq.com")
-    formData.append("pagenum", 1)
-    axios({
-      method: 'get',
-      url: '/api/api/mail/getinfo',
-      // data:formData,
-      params: {
-        "username": sessionStorage.getItem('username'),
-        "serverusername": sessionStorage.getItem('serverusername'),
-        "pagenum": 1,
-      }
-    }).then(res => {
-      console.log(res)
-      console.log(res.data.data)
-      for (let i = 0; i < res.data.data.length; i++) {
-        var each=res.data.data[i]
-        var temp = {
-          id: i,
-          sender: each.fromAddress,
-          subject: each.subject,
-          time: this.formDate(new Date(each.date)),
-          attachments: ['Hello.text'],
-        }
-        this.emails.push(temp)
-      }
-      this.loading=false
+    // var formData = new FormData();
+    // formData.append("username", sessionStorage.getItem('username'))
+    // formData.append("serverusername", "3220497145@qq.com")
+    // formData.append("pagenum", 1)
+    // axios({
+    //   method: 'get',
+    //   url: '/api/api/mail/getinfo',
+    //   // data:formData,
+    //   params: {
+    //     "username": sessionStorage.getItem('username'),
+    //     "serverusername": sessionStorage.getItem('serverusername'),
+    //     "pagenum": 1,
+    //   }
+    // }).then(res => {
+    //   console.log(res)
+    //   console.log(res.data.data)
+    //   this.pageTotal=res.data.data.num
+    //   for (let i = 0; i < res.data.data.maillist.length; i++) {
+    //     var each=res.data.data.maillist[i]
+    //     var temp = {
+    //       id: i,
+    //       sender: each.fromAddress,
+    //       subject: each.subject,
+    //       time: this.formDate(new Date(each.date)),
+    //     }
+    //     this.emails.push(temp)
+    //   }
+    //   this.loading=false
+    //
+    // }).catch(res => {
+    //   console.log(res)
+    // })
 
-    }).catch(res => {
-      console.log(res)
-    })
+    this.getOnePageMail(1)
   },
 
   methods: {
+    getOnePageMail(pageNo){
+      this.loading=true
+      this.emails=[]
+      axios({
+        method: 'get',
+        url: '/api/api/mail/getinfo',
+        // data:formData,
+        params: {
+          "username": sessionStorage.getItem('username'),
+          "serverusername": sessionStorage.getItem('serverusername'),
+          "pagenum": pageNo,
+        }
+      }).then(res => {
+        console.log(res)
+        console.log(res.data.data)
+        this.pageTotal=res.data.data.num
+        for (let i = 0; i < res.data.data.maillist.length; i++) {
+          var each=res.data.data.maillist[i]
+          var temp = {
+            id: i,
+            sender: each.fromAddress,
+            subject: each.subject,
+            time: this.formDate(new Date(each.date)),
+          }
+          this.emails.push(temp)
+        }
+        this.loading=false
+
+      }).catch(res => {
+        console.log(res)
+      })
+    },
     formDate(dateString){
       // const dateString = "Thu Jun 29 2023 18:08:41 GMT+0800 (中国标准时间)";
       const date = new Date(dateString);
@@ -115,14 +149,19 @@ export default {
     },
     handleCurrentChange(pageNo) {
       console.log(pageNo)
+      this.getOnePageMail(pageNo)
+
     },
     layoutReceiving() {
       emitter.emit('back', true);
     },
     goToEmailDetail(id) {
+      //根据当前页面得序号  和id获取
+      console.log(this.currentPage)
       console.log("进入详情页", id)
+      var index=(this.currentPage-1)*10+id
       // this.$router.push(`/email/${id}`);
-      emitter.emit('toRouter', `/email/${id}`);
+      emitter.emit('toRouter', `/email/${index}`);
     },
   },
 };
