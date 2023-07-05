@@ -198,6 +198,7 @@ export default {
           url: '/api/api/user/addsetting',
           data:formData
         }).then(res=>{
+          console.log(res)
           if(res.data.code!==200){
             this.$tips({
               tip:'错误提示',

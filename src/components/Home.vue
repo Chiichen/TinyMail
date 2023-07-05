@@ -139,6 +139,9 @@ export default {
         tipDetail: "切换成功",
         type: 'success'
       })
+
+
+      emitter.emit('changeMail',1)
     },
     toRouter(route) {
       console.log(route)
@@ -240,6 +243,10 @@ export default {
       sessionStorage.setItem('nickname', res.data.data.nickname)
       this.NAME = res.data.data.nickname;
     })
+
+
+
+
   },
   computed: {}
 };

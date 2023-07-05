@@ -24,7 +24,7 @@
     <!--    </el-footer>-->
     <!--    <email :emails="emails"></email>-->
     <!--    <iframe src="https://www.w3school.com.cn/jsref/dom_obj_frame.asp" style="height: 1000px"></iframe>-->
-    <div v-html="htmlContent"></div>
+
     <el-pagination
         v-model:current-page="currentPage"
         page-size="10"
@@ -62,7 +62,7 @@ export default {
       currentPage: 1,
       pageTotal: 10,
 
-      htmlContent: "<h1>Hello, World!</h1>"//显示html的1
+
     };
   },
   created() {
@@ -100,6 +100,10 @@ export default {
     // })
 
     this.getOnePageMail(1)
+
+
+    //给切换邮箱绑定事件
+    emitter.on('changeMail', this.getOnePageMail)
   },
 
   methods: {
@@ -125,7 +129,7 @@ export default {
             id: i,
             sender: each.fromAddress,
             subject: each.subject,
-            time: this.formDate(new Date(each.date)),
+            time: this.formDate(each.date),
           }
           this.emails.push(temp)
         }
@@ -135,7 +139,7 @@ export default {
         console.log(res)
       })
     },
-    formDate(dateString){
+    formDate(dateString) {
       // const dateString = "Thu Jun 29 2023 18:08:41 GMT+0800 (中国标准时间)";
       const date = new Date(dateString);
       const year = date.getFullYear();
@@ -145,6 +149,44 @@ export default {
       const minutes = ("0" + date.getMinutes()).slice(-2);
       const seconds = ("0" + date.getSeconds()).slice(-2);
       const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      console.log(formattedDate)
+      if (formattedDate === 'NaN-aN-aN aN:aN:aN') {
+        const datetimeStr=dateString
+        const monthMap = {
+          '1月': '01',
+          '2月': '02',
+          '3月': '03',
+          '4月': '04',
+          '5月': '05',
+          '6月': '06',
+          '7月': '07',
+          '8月': '08',
+          '9月': '09',
+          '10月': '10',
+          '11月': '11',
+          '12月': '12'
+        };
+        const datetimeArr = datetimeStr.split(' ');
+        datetimeArr[2] = monthMap[datetimeArr[2]];
+
+// 将日期时间字符串转换为Date对象
+        const datetime = new Date(datetimeArr.join(' '));
+
+// 将Date对象格式化为标准日期时间格式
+        const year = datetime.getFullYear();
+        const month = ('0' + (datetime.getMonth() + 1)).slice(-2);
+        const day = ('0' + datetime.getDate()).slice(-2);
+        const hour = ('0' + datetime.getHours()).slice(-2);
+        const minute = ('0' + datetime.getMinutes()).slice(-2);
+        const second = ('0' + datetime.getSeconds()).slice(-2);
+        //const formattedDatetime = `${year}-${month}-${day} ${hour}:${minute}:${second}`;
+        const formattedDatetime = `${year}-${day}-${month} ${hour}:${minute}:${second}`;
+
+        console.log(formattedDatetime); // 输出：2023-07-04 19:14:41
+        return formattedDatetime
+
+
+      }
       return formattedDate
     },
     handleCurrentChange(pageNo) {

@@ -136,6 +136,7 @@ import axios from "axios";
             for (const fileListElement of this.fileList) {
               formData.append("files",fileListElement.raw)
             }
+            console.log(formData.get('files'))
             // for (var i = 0; i < this.fileList.length; i++) {
             //   formData.append('files',this.fileList[i])
             // }
@@ -143,6 +144,9 @@ import axios from "axios";
               headers:{'Content-Type': 'multipart/form-data'}
             }).then(res=>{
               console.log(res)
+              setTimeout(() => {
+                emitter.emit('back',true)
+              }, 2000)
               this.$tips({
                 // tip:res.response.data.msg,
                 // tipDetail:res.response.data.data,

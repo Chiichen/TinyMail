@@ -27,6 +27,9 @@
       </div>
       <div class="email-body">
         <div class="email-content">{{ subject }}</div>
+        <div v-html="htmlContent"></div>
+
+
         <div class="email-attachments">
           <!--            <el-button type="primary" @click="showAttachments" v-if="email.attachments.length > 0">-->
           <!--              附件 ({{ email.attachments.length }})-->
@@ -73,13 +76,14 @@ export default {
   data() {
 
     return {
+      htmlContent: "<h1>Hello, World!</h1>",//显示html的1,
       activeNames: "附件",
       index: 1,
       attachArr: [],
       sender: "",
       subject: "",
       time: "",
-      loading:true,
+      loading: true,
     }
 
 
@@ -103,15 +107,19 @@ export default {
     }).then(res => {
       console.log(res)
       console.log(res.data.data.attachname)
-      this.attachArr = res.data.data.attachname
+      if (res.data.data.attachname !== null) {
+        this.attachArr = res.data.data.attachname
+      }
+
 
       console.log(res.data.data.mail)
       var temp = res.data.data.mail
       this.sender = temp.fromAddress
       this.subject = temp.subject
-      this.time = this.formDate(new Date(temp.date))
+      this.time = this.formDate(temp.date)
+      this.htmlContent = temp.content
 
-      this.loading=false
+      this.loading = false
 
     }).catch(res => {
       console.log(res)
@@ -128,6 +136,43 @@ export default {
       const minutes = ("0" + date.getMinutes()).slice(-2);
       const seconds = ("0" + date.getSeconds()).slice(-2);
       const formattedDate = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+      console.log(formattedDate)
+      if (formattedDate === 'NaN-aN-aN aN:aN:aN') {
+        const datetimeStr=dateString
+        const monthMap = {
+          '1月': '01',
+          '2月': '02',
+          '3月': '03',
+          '4月': '04',
+          '5月': '05',
+          '6月': '06',
+          '7月': '07',
+          '8月': '08',
+          '9月': '09',
+          '10月': '10',
+          '11月': '11',
+          '12月': '12'
+        };
+        const datetimeArr = datetimeStr.split(' ');
+        datetimeArr[2] = monthMap[datetimeArr[2]];
+
+// 将日期时间字符串转换为Date对象
+        const datetime = new Date(datetimeArr.join(' '));
+
+// 将Date对象格式化为标准日期时间格式
+        const year = datetime.getFullYear();
+        const month = ('0' + (datetime.getMonth() + 1)).slice(-2);
+        const day = ('0' + datetime.getDate()).slice(-2);
+        const hour = ('0' + datetime.getHours()).slice(-2);
+        const minute = ('0' + datetime.getMinutes()).slice(-2);
+        const second = ('0' + datetime.getSeconds()).slice(-2);
+        const formattedDatetime = `${year}-${day}-${month} ${hour}:${minute}:${second}`;
+
+        console.log(formattedDatetime); // 输出：2023-07-04 19:14:41
+        return formattedDatetime
+
+
+      }
       return formattedDate
     },
     downLoadFile(fileIndex) {
@@ -144,27 +189,27 @@ export default {
           "username": sessionStorage.getItem('username'),
           "serverusername": sessionStorage.getItem('serverusername'),
           "index": this.index,
-          "attindex":fileIndex+1,
+          "attindex": fileIndex + 1,
         }
       })
-      .then(response => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', this.attachArr[fileIndex]);
-        document.body.appendChild(link);
-        link.click();
-        this.$tips({
-          // tip:res.response.data.msg,
-          // tipDetail:res.response.data.data,
-          tip:"提示",
-          tipDetail:"附件下载成功",
-          type: 'success'
-        })
-      })
-      .catch(error => {
-        console.error(error);
-      });
+          .then(response => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', this.attachArr[fileIndex]);
+            document.body.appendChild(link);
+            link.click();
+            this.$tips({
+              // tip:res.response.data.msg,
+              // tipDetail:res.response.data.data,
+              tip: "提示",
+              tipDetail: "附件下载成功",
+              type: 'success'
+            })
+          })
+          .catch(error => {
+            console.error(error);
+          });
       // axios({
       //   method: 'get',
       //   url: '/api/api/mail/getAttachment',
